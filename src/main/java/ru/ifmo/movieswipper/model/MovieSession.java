@@ -16,7 +16,7 @@ public class MovieSession {
 
     @NotNull
     @Max(64)
-    private String imdb_movie_id;
+    private String tmdb_movie_id;
 
     @ManyToOne
     private User user;

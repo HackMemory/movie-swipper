@@ -13,5 +13,5 @@ public class Genre {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
-    private Long imdb_genre_id;
+    private Long tmdb_genre_id;
 }
