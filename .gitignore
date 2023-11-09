@@ -6,6 +6,9 @@ db/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+.env
+.env-dev
+
 ### STS ###
 .apt_generated
 .classpath
