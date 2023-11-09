@@ -1,6 +1,7 @@
 package ru.ifmo.movieswipper.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 @Entity(name = "movie_session")
@@ -11,6 +12,9 @@ public class MovieSession {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @NotNull
+    private Long imdb_movie_id;
 
     @ManyToOne
     private User user;

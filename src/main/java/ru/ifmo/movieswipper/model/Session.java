@@ -1,6 +1,8 @@
 package ru.ifmo.movieswipper.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 
@@ -16,5 +18,6 @@ public class Session {
     @ManyToOne
     private User creator;
 
+    @NotNull
     private String inviteCode;
 }
