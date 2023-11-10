@@ -54,11 +54,17 @@ public class AuthService {
 
             Instant now = Instant.now();
             long expiry = 36000L;
+            String scope = authentication.getAuthorities().stream()
+                    .map(GrantedAuthority::getAuthority)
+                    .collect(Collectors.joining(" "));
+
+            System.out.println(scope);
             JwtClaimsSet claims = JwtClaimsSet.builder()
                     .issuer("self")
                     .issuedAt(now)
                     .expiresAt(now.plusSeconds(expiry))
                     .subject(authentication.getName())
+                    .claim("scope", scope)
                     .build();
 
             return encoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
@@ -67,5 +73,29 @@ public class AuthService {
         }
     }
 
+
+    public void register(String username, String password) {
+        Role roleUser = roleService.getMemberRole().orElseGet(null);
+        if (userService.findByUsername(username).isPresent()) {
+            throw new IllegalArgumentException("User exists");
+        }
+
+        User user = User.builder()
+                .username(username)
+                .password(passwordEncoder.encode(password))
+                .roles(Set.of(roleUser)).build();
+
+        userService.saveUser(user);
+    }
+
+    public void changeRole(String username, String role) {
+        Optional<User> optionalUserEntity = userService.findByUsername(username);
+        User userEntity = optionalUserEntity.orElseThrow();
+        Optional<Role> optionalRoleEntity = roleService.findByName(role);
+        Role roleEntity = optionalRoleEntity.orElseThrow();
+        userEntity.getRoles().clear();
+        userEntity.getRoles().add(roleEntity);
+        userService.saveUser(userEntity);
+    }
 
 }
