@@ -16,6 +16,9 @@ public class SessionService {
         return sessionRepository.save(session);
     }
 
+    public void delete(Session session){
+        sessionRepository.delete(session);
+    }
     public Optional<Session> findByCode(String code) {
         return sessionRepository.findByInviteCode(code);
     }

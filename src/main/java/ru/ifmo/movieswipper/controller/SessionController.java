@@ -58,4 +58,26 @@ public class SessionController {
 
         throw new ResponseStatusException(HttpStatus.NOT_FOUND);
     }
+
+    @DeleteMapping("/delete/{code}")
+    public ResponseEntity<?> delete(Authentication authentication, @PathVariable String code) {
+        Session session = sessionService.findByCode(code)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Session not found"));
+
+        try {
+            User user = userService.findByUsername(authentication.getName())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+
+            if(!session.getCreator().getId().equals(user.getId())){
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User does not have permission to delete this session");
+            }
+
+            sessionService.delete(session);
+        }catch (IllegalArgumentException exception){
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN, exception.getMessage(), exception);
+        }
+
+        return ResponseEntity.ok().build();
+    }
 }
