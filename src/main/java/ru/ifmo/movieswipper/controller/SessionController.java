@@ -2,7 +2,6 @@ package ru.ifmo.movieswipper.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -10,14 +9,13 @@ import org.springframework.web.server.ResponseStatusException;
 import ru.ifmo.movieswipper.dto.response.SessionCreateResponse;
 import ru.ifmo.movieswipper.model.Session;
 import ru.ifmo.movieswipper.model.User;
-import ru.ifmo.movieswipper.model.UserSession;
 import ru.ifmo.movieswipper.service.SessionService;
 import ru.ifmo.movieswipper.service.UserService;
 import ru.ifmo.movieswipper.service.UserSessionService;
 
 import java.util.Optional;
 
-import static ru.ifmo.movieswipper.util.InviteCodeGenerator.generateRandomString;
+import static ru.ifmo.movieswipper.util.StringUtils.generateRandomString;
 
 @RestController
 @RequestMapping("/session")

@@ -2,7 +2,7 @@ package ru.ifmo.movieswipper.util;
 
 import java.util.Random;
 
-public class InviteCodeGenerator {
+public class StringUtils {
 
     public static String generateRandomString(int length) {
         String symbols = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
