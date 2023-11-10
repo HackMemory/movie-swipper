@@ -33,8 +33,8 @@ public class RoleService {
         return findByName(RoleConstants.MEMBER);
     }
 
-    public Role saveRole(Role roleEntity) {
-        return roleRepository.save(roleEntity);
+    public Role saveRole(Role role) {
+        return roleRepository.save(role);
     }
 
 }

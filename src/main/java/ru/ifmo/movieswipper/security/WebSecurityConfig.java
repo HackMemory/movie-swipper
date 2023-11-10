@@ -78,6 +78,10 @@ public class WebSecurityConfig {
                         .authenticationEntryPoint(new BearerTokenAuthenticationEntryPoint())
                         .accessDeniedHandler(new BearerTokenAccessDeniedHandler())
                 )
+                .authorizeHttpRequests((request) ->
+                        request
+                                .requestMatchers( "/auth/login").permitAll()
+                                .anyRequest().authenticated())
 
                 .build();
     }

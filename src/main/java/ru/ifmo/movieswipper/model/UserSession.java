@@ -3,8 +3,10 @@ package ru.ifmo.movieswipper.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+@Builder
 @Entity(name = "user_session")
-@RequiredArgsConstructor
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
 public class UserSession {
