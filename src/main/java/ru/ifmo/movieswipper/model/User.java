@@ -12,8 +12,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-@Entity(name = "user")
-@RequiredArgsConstructor
+@Builder
+@Entity(name = "users")
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
 public class User implements UserDetails {
@@ -22,7 +24,7 @@ public class User implements UserDetails {
     private Long id;
 
     @NotBlank
-    @Size(min = 5, max = 25)
+    @Size(min = 4, max = 25)
     private String username;
 
     @NotBlank
