@@ -85,4 +85,20 @@ public class WebSecurityConfig {
 
                 .build();
     }
+
+
+    @Bean
+    public RoleHierarchy roleHierarchy() {
+        RoleHierarchyImpl roleHierarchy = new RoleHierarchyImpl();
+        String hierarchy = "ROLE_ADMIN > ROLE_MODERATOR \n ROLE_MODERATOR > ROLE_VIP \n ROLE_VIP > ROLE_MEMBER";
+        roleHierarchy.setHierarchy(hierarchy);
+        return roleHierarchy;
+    }
+
+    @Bean
+    public DefaultWebSecurityExpressionHandler customWebSecurityExpressionHandler() {
+        DefaultWebSecurityExpressionHandler expressionHandler = new DefaultWebSecurityExpressionHandler();
+        expressionHandler.setRoleHierarchy(roleHierarchy());
+        return expressionHandler;
+    }
 }
