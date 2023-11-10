@@ -7,12 +7,18 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
+import ru.ifmo.movieswipper.error.CustomErrorAttributes;
 
 @SpringBootApplication
 @EnableJpaRepositories
 public class MovieSwipperApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(MovieSwipperApplication.class, args);
+	}
+
+	@Bean
+	public CustomErrorAttributes customErrorAttributes() {
+		return new CustomErrorAttributes();
 	}
 
 	@Bean

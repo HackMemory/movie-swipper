@@ -27,7 +27,7 @@ public class UserSessionService {
     public void join(Session session, String username){
         Optional<User> user = userService.findByUsername(username);
         if(this.checkIsUserPresentInSession(user.get(), session)){
-            throw new IllegalArgumentException("User already exists");
+            throw new IllegalArgumentException("User already exists in session");
         }
 
         UserSession userSession = UserSession.builder()

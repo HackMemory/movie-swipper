@@ -30,8 +30,7 @@ public class AuthController {
 
             return ResponseEntity.ok(response);
         } catch (IllegalArgumentException exception) {
-//            throw new ResponseStatusException(HttpStatus.NOT_FOUND, exception.getMessage());
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, exception.getMessage());
         }
     }
 

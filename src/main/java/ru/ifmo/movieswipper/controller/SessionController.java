@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import ru.ifmo.movieswipper.dto.response.SessionCreateResponse;
 import ru.ifmo.movieswipper.model.Session;
 import ru.ifmo.movieswipper.model.User;
@@ -48,12 +49,13 @@ public class SessionController {
             try {
                 userSessionService.join(session.get(), authentication.getName());
             }catch (IllegalArgumentException exception){
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+                throw new ResponseStatusException(
+                        HttpStatus.FORBIDDEN, exception.getMessage(), exception);
             }
 
             return ResponseEntity.ok().build();
         }
 
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND);
     }
 }

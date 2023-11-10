@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 import ru.ifmo.movieswipper.dto.request.RegisterRequest;
 import ru.ifmo.movieswipper.service.AuthService;
 import ru.ifmo.movieswipper.service.UserService;
@@ -28,7 +29,8 @@ public class UserController {
             authService.register(request.getUsername(), request.getPassword());
             return ResponseEntity.ok().build();
         } catch (IllegalArgumentException exception) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN, exception.getMessage(), exception);
         }
     }
 
@@ -40,7 +42,8 @@ public class UserController {
             authService.changeRole(request.getUsername(), request.getUsername());
             return ResponseEntity.ok().build();
         } catch (IllegalArgumentException exception) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN, exception.getMessage(), exception);
         }
     }
 
