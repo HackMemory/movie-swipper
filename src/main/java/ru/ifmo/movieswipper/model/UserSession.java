@@ -2,6 +2,8 @@ package ru.ifmo.movieswipper.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Builder
 @Entity(name = "user_session")
@@ -18,5 +20,6 @@ public class UserSession {
     private User user;
 
     @ManyToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Session session;
 }
