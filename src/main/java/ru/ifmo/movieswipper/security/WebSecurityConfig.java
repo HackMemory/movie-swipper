@@ -80,7 +80,7 @@ public class WebSecurityConfig {
                 )
                 .authorizeHttpRequests((request) ->
                         request
-                                .requestMatchers( "/auth/login").permitAll()
+                                .requestMatchers( "/auth/login", "/swagger-ui.html",  "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                                 .anyRequest().authenticated())
 
                 .build();
