@@ -10,12 +10,8 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class UserService {
+public class UserService implements UserDetailsService  {
     private final UserRepository userRepository;
-    public UserDetailsService userDetailsService() throws UsernameNotFoundException {
-        return username -> userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-    }
 
     public User saveUser(User userEntity) {
         return userRepository.save(userEntity);
@@ -29,4 +25,9 @@ public class UserService {
         return userRepository.findByUsername(username);
     }
 
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return userRepository.findByUsername(username)
+                        .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    }
 }

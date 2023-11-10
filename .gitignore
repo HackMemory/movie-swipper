@@ -38,3 +38,5 @@ build/
 .vscode/
 /src/main/resources/private.pem
 /src/main/resources/public.pem
+/src/main/resources/jwt.pem
+/src/main/resources/jwt.pub
