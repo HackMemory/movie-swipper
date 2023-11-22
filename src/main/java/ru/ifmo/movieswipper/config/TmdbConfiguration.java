@@ -8,8 +8,12 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class TmdbConfiguration {
+
+    @Value("${tmdb.api_key}")
+    private String apiKey;
+
     @Bean
-    public TmdbMovies tmdbMovies(@Value("${tmdb.api_key}") String apiKey) {
-        return new TmdbApi(apiKey).getMovies();
+    public TmdbMovies tmdbMovies() {
+        return new TmdbApi(this.apiKey).getMovies();
     }
 }
