@@ -2,9 +2,11 @@ package ru.ifmo.movieswipper.config;
 
 import info.movito.themoviedbapi.TmdbApi;
 import info.movito.themoviedbapi.TmdbMovies;
+import info.movito.themoviedbapi.tools.WebBrowser;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 
 @Configuration
 public class TmdbConfiguration {
@@ -12,8 +14,18 @@ public class TmdbConfiguration {
     @Value("${tmdb.api_key}")
     private String apiKey;
 
+    @Value("${spring.profiles.active}")
+    private String activeProfile;
+
     @Bean
     public TmdbMovies tmdbMovies() {
-        return new TmdbApi(this.apiKey).getMovies();
+        if (activeProfile.equals("prod")) {
+            return new TmdbApi(this.apiKey).getMovies();
+        }else {
+            WebBrowser wb = new WebBrowser();
+            wb.setProxy("127.0.0.1", "2080", "", "");
+
+            return new TmdbApi(this.apiKey, wb, true).getMovies();
+        }
     }
 }

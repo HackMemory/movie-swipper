@@ -6,7 +6,14 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Value;
 
 @Value
-public record Person(@NotNull @NotBlank String name, @NotNull @NotBlank String firstName) {
+public class Person {
+    @NotNull
+    @NotBlank
+    String name;
+    @NotNull
+    @NotBlank
+    String firstName;
+
     @JsonCreator
     public Person(String name, String firstName) {
         this.name = name;

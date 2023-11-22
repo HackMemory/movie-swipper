@@ -1,24 +1,19 @@
 package ru.ifmo.movieswipper.mapper;
 
 import info.movito.themoviedbapi.model.MovieDb;
-import lombok.experimental.UtilityClass;
-import ru.ifmo.movieswipper.model.Movie;
-import ru.ifmo.movieswipper.model.Rate;
-import ru.ifmo.movieswipper.util.DateTimeUtil;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
+import org.mapstruct.factory.Mappers;
+import ru.ifmo.movieswipper.dto.MovieDTO;
 
-@UtilityClass
-public class MovieMapper {
+@Mapper
+public interface MovieMapper {
+    MovieMapper INSTANCE = Mappers.getMapper(MovieMapper.class);
 
-    public static Movie toDomain(final MovieDb movieDb) {
-        if (movieDb == null) {
-            return null;
-        }
-        return Movie.builder()
-                .id(String.valueOf(movieDb.getId()))
-                .title(movieDb.getTitle())
-                .synopsys(movieDb.getOverview())
-                .rate(new Rate(movieDb.getPopularity()))
-                .releaseDate(DateTimeUtil.getFromISO(movieDb.getReleaseDate()))
-                .build();
-    }
+    @Mappings({
+            @Mapping(target = "synopsys", source = "overview"),
+            @Mapping(target = "rate", source = "voteAverage")
+    })
+    MovieDTO toDomain(MovieDb movie);
 }

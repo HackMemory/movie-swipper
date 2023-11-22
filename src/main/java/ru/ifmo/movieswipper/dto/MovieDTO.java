@@ -1,8 +1,13 @@
-package ru.ifmo.movieswipper.model;
+package ru.ifmo.movieswipper.dto;
 
+import info.movito.themoviedbapi.model.Genre;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
+import ru.ifmo.movieswipper.model.Person;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -11,18 +16,13 @@ import java.util.List;
 @Setter
 @Builder
 @AllArgsConstructor
-public class Movie {
-
-    @NotBlank
+public class MovieDTO {
     private String id;
-    @NotBlank
     private String title;
-    @NotBlank
     private String synopsys;
-    @NotNull
-    private Rate rate;
-    @NotNull
+    private float rate;
     private LocalDate releaseDate;
     private Person director;
     private List<Person> actors;
+    private List<Genre> genres;
 }
