@@ -38,7 +38,7 @@ public class AuthService {
     @PostConstruct
     public void init() {
         if (userService.findByUsername(rootUsername).isEmpty()) {
-            Role adminRole = roleService.getAdminRole().orElseGet(null);
+            Role adminRole = roleService.getAdminRole().orElseThrow();
             User admin = User.builder()
                     .username(rootUsername)
                     .password(passwordEncoder.encode(rootPassword))
