@@ -75,8 +75,7 @@ public class AuthService {
 
 
     public void register(String username, String password) {
-        //TODO fix
-        Role roleUser = roleService.getMemberRole().orElseGet(null);
+        Role roleUser = roleService.getMemberRole().orElseThrow();
         if (userService.findByUsername(username).isPresent()) {
             throw new IllegalArgumentException("User exists");
         }
