@@ -48,6 +48,7 @@ public class AuthService {
     }
 
     public String login(String username, String password) throws IllegalArgumentException {
+        //TODO fix exception
         try {
             Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
 
@@ -74,6 +75,7 @@ public class AuthService {
 
 
     public void register(String username, String password) {
+        //TODO fix
         Role roleUser = roleService.getMemberRole().orElseGet(null);
         if (userService.findByUsername(username).isPresent()) {
             throw new IllegalArgumentException("User exists");
