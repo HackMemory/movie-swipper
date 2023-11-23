@@ -2,6 +2,7 @@ package ru.ifmo.movieswipper.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.ifmo.movieswipper.exception.UserExistInSessionException;
 import ru.ifmo.movieswipper.model.Session;
 import ru.ifmo.movieswipper.model.User;
 import ru.ifmo.movieswipper.model.UserSession;
@@ -25,14 +26,14 @@ public class UserSessionService {
     }
 
     public void join(Session session, String username){
-        Optional<User> user = userService.findByUsername(username);
-        if(this.checkIsUserPresentInSession(user.get(), session)){
-            throw new IllegalArgumentException("User already exists in session");
+        User user = userService.findByUsername(username).orElseThrow();
+        if(this.checkIsUserPresentInSession(user, session)){
+            throw new UserExistInSessionException("User already exists in session");
         }
 
         UserSession userSession = UserSession.builder()
                 .session(session)
-                .user(user.get()).build();
+                .user(user).build();
 
         this.saveUserSession(userSession);
     }
