@@ -26,6 +26,26 @@ public class MovieController {
         }
     }
 
+    @GetMapping("/byGenre")
+    public ResponseEntity<?> getByGenres(Pageable pageable, String genres) {
+        try {
+            return ResponseEntity.ok(movieService.getMoviesByGenres(pageable, genres));
+        } catch (Exception ex){
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, ex.getMessage(), ex);
+        }
+    }
+
+    @GetMapping("/getGenresList")
+    public ResponseEntity<?> getGenresList(Pageable pageable) {
+        try {
+            return ResponseEntity.ok(movieService.getGenresList());
+        } catch (Exception ex){
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, ex.getMessage(), ex);
+        }
+    }
+
     @GetMapping("/getMovie/{id}")
     public ResponseEntity<?> getMovie(@PathVariable("id") String id) {
         try {
