@@ -97,17 +97,18 @@ public class UserSessionService {
         this.saveUserSession(userSession);
     }
 
-    public void deleteSession(String username, String sessionCode){
-        User user = userService.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-
+    public void deleteSession(String sessionCode){
         Session session = sessionService.findByCode(sessionCode)
                 .orElseThrow(() -> new SessionNotFoundException("Session not found"));
 
-        if(!session.getCreator().getId().equals(user.getId())){
-            throw new PermissionDeniedException("User doesn't have permission to delete this session");
-        }
-
         sessionService.delete(session);
+    }
+
+    public void exitFromSession(String username){
+        User user = userService.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        UserSession userSession = userSessionRepository.findUserSessionByUser(user);
+        userSessionRepository.delete(userSession);
     }
 }

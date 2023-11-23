@@ -34,15 +34,4 @@ public class SessionService {
 
         return sessionRepository.findSessionByCreator(user);
     }
-
-    public void exitFromSession(String username){
-        User user = userService.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-
-        Session session = sessionRepository.findSessionByCreator(user)
-                .orElseThrow(() -> new SessionNotFoundException("The user is not a member of any session"));
-
-        sessionRepository.delete(session);
-    }
-
 }

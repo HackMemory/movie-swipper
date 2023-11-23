@@ -9,19 +9,10 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import ru.ifmo.movieswipper.dto.response.SessionCreateResponse;
-import ru.ifmo.movieswipper.dto.response.SessionResponse;
-import ru.ifmo.movieswipper.exception.PermissionDeniedException;
 import ru.ifmo.movieswipper.exception.SessionNotFoundException;
 import ru.ifmo.movieswipper.exception.UserExistInSessionException;
 import ru.ifmo.movieswipper.model.Session;
-import ru.ifmo.movieswipper.model.User;
-import ru.ifmo.movieswipper.service.SessionService;
-import ru.ifmo.movieswipper.service.UserService;
 import ru.ifmo.movieswipper.service.UserSessionService;
-
-import java.util.Optional;
-
-import static ru.ifmo.movieswipper.util.StringUtils.generateRandomString;
 
 @RestController
 @RequestMapping("/session")
@@ -29,7 +20,6 @@ import static ru.ifmo.movieswipper.util.StringUtils.generateRandomString;
 public class SessionController {
 
     private final UserSessionService userSessionService;
-    private final SessionService sessionService;
 
     @GetMapping("/current")
     public ResponseEntity<?> current(Authentication authentication) {
@@ -44,7 +34,7 @@ public class SessionController {
     @GetMapping("/exit")
     public ResponseEntity<?> exit(Authentication authentication) {
         try {
-            sessionService.exitFromSession(authentication.getName());
+            userSessionService.exitFromSession(authentication.getName());
             return ResponseEntity.ok().build();
         }catch (UsernameNotFoundException | SessionNotFoundException ex){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage());
@@ -80,12 +70,10 @@ public class SessionController {
     @DeleteMapping("/delete/{code}")
     public ResponseEntity<?> delete(Authentication authentication, @PathVariable String code) {
         try{
-            userSessionService.deleteSession(authentication.getName(), code);
+            userSessionService.deleteSession(code);
             return ResponseEntity.ok().build();
-        }catch (UsernameNotFoundException | SessionNotFoundException ex){
+        }catch (SessionNotFoundException ex){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage());
-        }catch (PermissionDeniedException ex){
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, ex.getMessage());
         }
     }
 }
