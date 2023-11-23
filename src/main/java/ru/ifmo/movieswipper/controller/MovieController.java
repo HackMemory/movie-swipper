@@ -16,7 +16,7 @@ public class MovieController {
 
     private final MovieService movieService;
 
-    @GetMapping("/populars")
+    @GetMapping("/getPopularMovies")
     public ResponseEntity<?> getPopular(Pageable pageable) {
         try {
             return ResponseEntity.ok(movieService.getPopulars(pageable));
@@ -26,7 +26,7 @@ public class MovieController {
         }
     }
 
-    @GetMapping("/byGenre")
+    @GetMapping("/getMoviesByGenre")
     public ResponseEntity<?> getByGenres(Pageable pageable, String genres) {
         try {
             return ResponseEntity.ok(movieService.getMoviesByGenres(pageable, genres));
@@ -37,7 +37,7 @@ public class MovieController {
     }
 
     @GetMapping("/getGenresList")
-    public ResponseEntity<?> getGenresList(Pageable pageable) {
+    public ResponseEntity<?> getGenresList() {
         try {
             return ResponseEntity.ok(movieService.getGenresList());
         } catch (Exception ex){
