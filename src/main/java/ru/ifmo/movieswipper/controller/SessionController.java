@@ -68,7 +68,7 @@ public class SessionController {
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_MODERATOR')")
     @DeleteMapping("/delete/{code}")
-    public ResponseEntity<?> delete(Authentication authentication, @PathVariable String code) {
+    public ResponseEntity<?> delete(@PathVariable String code) {
         try{
             userSessionService.deleteSession(code);
             return ResponseEntity.ok().build();
