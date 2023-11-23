@@ -16,6 +16,7 @@ import ru.ifmo.movieswipper.model.Role;
 import ru.ifmo.movieswipper.model.User;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -56,17 +57,17 @@ public class AuthService {
             Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
 
             Instant now = Instant.now();
-            String scope = authentication.getAuthorities().stream()
+            List<String> roles = authentication.getAuthorities().stream()
                     .map(GrantedAuthority::getAuthority)
-                    .collect(Collectors.joining(" "));
+                    .toList();
 
-            System.out.println(scope);
+            System.out.println(roles);
             JwtClaimsSet claims = JwtClaimsSet.builder()
                     .issuer("self")
                     .issuedAt(now)
                     .expiresAt(now.plusSeconds(expireTime))
                     .subject(authentication.getName())
-                    .claim("scope", scope)
+                    .claim("roles", roles)
                     .build();
 
             return encoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();

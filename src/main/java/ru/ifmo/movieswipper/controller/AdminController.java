@@ -20,7 +20,7 @@ import ru.ifmo.movieswipper.service.UserService;
 public class AdminController {
     private final AuthService authService;
 
-    @PreAuthorize("hasAnyAuthority('SCOPE_ROLE_ADMIN', 'SCOPE_ROLE_MODERATOR')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_MODERATOR')")
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest request) {
         try {
@@ -33,7 +33,7 @@ public class AdminController {
     }
 
 
-    @PreAuthorize("hasAnyAuthority('SCOPE_ROLE_ADMIN', 'SCOPE_ROLE_MODERATOR')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_MODERATOR')")
     @PostMapping("/changeRole")
     public ResponseEntity<?> changeRole(@Valid @RequestBody RegisterRequest request) {
         try {
