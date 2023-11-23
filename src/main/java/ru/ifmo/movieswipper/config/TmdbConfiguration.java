@@ -18,14 +18,14 @@ public class TmdbConfiguration {
     private String activeProfile;
 
     @Bean
-    public TmdbMovies tmdbMovies() {
+    public TmdbApi tmdbMovies() {
         if (activeProfile.equals("prod")) {
-            return new TmdbApi(this.apiKey).getMovies();
+            return new TmdbApi(this.apiKey);
         }else {
             WebBrowser wb = new WebBrowser();
             wb.setProxy("127.0.0.1", "2080", "", "");
 
-            return new TmdbApi(this.apiKey, wb, true).getMovies();
+            return new TmdbApi(this.apiKey, wb, true);
         }
     }
 }
