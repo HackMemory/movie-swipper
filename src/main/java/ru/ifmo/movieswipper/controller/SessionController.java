@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import ru.ifmo.movieswipper.dto.response.SessionCreateResponse;
+import ru.ifmo.movieswipper.dto.response.SessionResponse;
 import ru.ifmo.movieswipper.exception.PermissionDeniedException;
 import ru.ifmo.movieswipper.exception.SessionNotFoundException;
 import ru.ifmo.movieswipper.exception.UserExistInSessionException;
@@ -28,6 +29,27 @@ import static ru.ifmo.movieswipper.util.StringUtils.generateRandomString;
 public class SessionController {
 
     private final UserSessionService userSessionService;
+    private final SessionService sessionService;
+
+    @GetMapping("/current")
+    public ResponseEntity<?> current(Authentication authentication) {
+        try {
+            return ResponseEntity.ok(userSessionService.currentSession(authentication.getName()));
+
+        }catch (UsernameNotFoundException | SessionNotFoundException ex){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage());
+        }
+    }
+
+    @GetMapping("/exit")
+    public ResponseEntity<?> exit(Authentication authentication) {
+        try {
+            sessionService.exitFromSession(authentication.getName());
+            return ResponseEntity.ok().build();
+        }catch (UsernameNotFoundException | SessionNotFoundException ex){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage());
+        }
+    }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_MODERATOR', 'ROLE_VIP')")
     @PostMapping("/create")
@@ -54,7 +76,7 @@ public class SessionController {
         }
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_MODERATOR', 'ROLE_VIP')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_MODERATOR')")
     @DeleteMapping("/delete/{code}")
     public ResponseEntity<?> delete(Authentication authentication, @PathVariable String code) {
         try{

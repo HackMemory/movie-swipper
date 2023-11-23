@@ -8,5 +8,5 @@ import lombok.Data;
 @AllArgsConstructor
 @Builder
 public class SessionCreateResponse {
-    String code;
+    private String code;
 }
