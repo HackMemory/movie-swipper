@@ -27,7 +27,7 @@ public class SessionController {
     private final UserService userService;
 
     @PostMapping("/create")
-    public ResponseEntity<SessionCreateResponse> create(Authentication authentication) {
+    public ResponseEntity<?> create(Authentication authentication) {
         Optional<User> user = userService.findByUsername(authentication.getName());
         String code = generateRandomString(8);
         Session session = Session.builder()
