@@ -35,6 +35,9 @@ public class AuthService {
     @Value("${root.password}")
     private String rootPassword;
 
+    @Value("${token.expire}")
+    private Long expireTime;
+
     @PostConstruct
     public void init() {
         if (userService.findByUsername(rootUsername).isEmpty()) {
@@ -53,7 +56,6 @@ public class AuthService {
             Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
 
             Instant now = Instant.now();
-            long expiry = 36000L;
             String scope = authentication.getAuthorities().stream()
                     .map(GrantedAuthority::getAuthority)
                     .collect(Collectors.joining(" "));
@@ -62,7 +64,7 @@ public class AuthService {
             JwtClaimsSet claims = JwtClaimsSet.builder()
                     .issuer("self")
                     .issuedAt(now)
-                    .expiresAt(now.plusSeconds(expiry))
+                    .expiresAt(now.plusSeconds(expireTime))
                     .subject(authentication.getName())
                     .claim("scope", scope)
                     .build();
