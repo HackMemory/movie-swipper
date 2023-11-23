@@ -35,7 +35,7 @@ public class UserController {
 
 
     @PreAuthorize("hasAnyAuthority('SCOPE_ROLE_ADMIN', 'SCOPE_ROLE_MODERATOR')")
-    @PostMapping("/change-role")
+    @PostMapping("/changeRole")
     public ResponseEntity<?> changeRole(@Valid @RequestBody RegisterRequest request) {
         try {
             authService.changeRole(request.getUsername(), request.getUsername());

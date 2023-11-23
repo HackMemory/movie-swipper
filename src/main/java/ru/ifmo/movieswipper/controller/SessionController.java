@@ -54,7 +54,7 @@ public class SessionController {
             return ResponseEntity.ok().build();
         }
 
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Session not found");
     }
 
     @DeleteMapping("/delete/{code}")
