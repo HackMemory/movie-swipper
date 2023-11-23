@@ -13,5 +13,5 @@ public interface UserSessionRepository extends CrudRepository<UserSession, Long>
     boolean existsUserSessionByUser(User user);
     List<UserSession> findAllBySession(Session session);
 
-    UserSession findUserSessionByUser(User user);
+    Optional<UserSession> findUserSessionByUser(User user);
 }

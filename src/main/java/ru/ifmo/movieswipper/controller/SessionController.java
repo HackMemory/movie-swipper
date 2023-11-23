@@ -12,6 +12,7 @@ import ru.ifmo.movieswipper.dto.response.SessionCreateResponse;
 import ru.ifmo.movieswipper.exception.SessionNotFoundException;
 import ru.ifmo.movieswipper.exception.UserExistInSessionException;
 import ru.ifmo.movieswipper.model.Session;
+import ru.ifmo.movieswipper.service.MovieSessionService;
 import ru.ifmo.movieswipper.service.UserSessionService;
 
 @RestController
@@ -20,6 +21,7 @@ import ru.ifmo.movieswipper.service.UserSessionService;
 public class SessionController {
 
     private final UserSessionService userSessionService;
+    private final MovieSessionService movieSessionService;
 
     @GetMapping("/current")
     public ResponseEntity<?> current(Authentication authentication) {
@@ -73,6 +75,35 @@ public class SessionController {
             userSessionService.deleteSession(code);
             return ResponseEntity.ok().build();
         }catch (SessionNotFoundException ex){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage());
+        }
+    }
+
+
+    @PostMapping("/addMovie")
+    public ResponseEntity<?> addMovie(Authentication authentication, Long tmdbMovieId, Boolean liked) {
+        try {
+            movieSessionService.addMovie(authentication.getName(), tmdbMovieId, liked);
+            return ResponseEntity.ok().build();
+        }catch (UsernameNotFoundException | SessionNotFoundException ex){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage());
+        }
+    }
+
+    @GetMapping("/getLikedMovies")
+    public ResponseEntity<?> getLikedMovies(Authentication authentication) {
+        try {
+            return ResponseEntity.ok(movieSessionService.getLikedMovies(authentication.getName()));
+        }catch (UsernameNotFoundException | SessionNotFoundException ex){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage());
+        }
+    }
+
+    @GetMapping("/getMatchedMovies")
+    public ResponseEntity<?> getMatchedMovies(Authentication authentication) {
+        try {
+            return ResponseEntity.ok(movieSessionService.getMatchedMovies(authentication.getName()));
+        }catch (UsernameNotFoundException | SessionNotFoundException ex){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage());
         }
     }

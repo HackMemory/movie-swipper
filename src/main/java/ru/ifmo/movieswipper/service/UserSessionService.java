@@ -3,9 +3,9 @@ package ru.ifmo.movieswipper.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.ifmo.movieswipper.dto.UserDTO;
 import ru.ifmo.movieswipper.dto.response.SessionResponse;
-import ru.ifmo.movieswipper.exception.PermissionDeniedException;
 import ru.ifmo.movieswipper.exception.SessionNotFoundException;
 import ru.ifmo.movieswipper.exception.UserExistInSessionException;
 import ru.ifmo.movieswipper.mapper.UserMapper;
@@ -16,7 +16,6 @@ import ru.ifmo.movieswipper.repository.UserSessionRepository;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static ru.ifmo.movieswipper.util.StringUtils.generateRandomString;
 
@@ -27,6 +26,10 @@ public class UserSessionService {
 
     private final UserService userService;
     private final SessionService sessionService;
+
+    public Optional<UserSession> findUserSessionByUser(User user){
+        return userSessionRepository.findUserSessionByUser(user);
+    }
 
     public void saveUserSession(UserSession userSession){
         userSessionRepository.save(userSession);
@@ -41,21 +44,25 @@ public class UserSessionService {
     }
 
     public SessionResponse currentSession(String username){
-        Session session = sessionService.findByUser(username)
-                .orElseThrow(()-> new SessionNotFoundException("The user is not a member of any session"));
+        User user = userService.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-        List<UserDTO> userList = userSessionRepository.findAllBySession(session).stream()
+        UserSession userSession = userSessionRepository.findUserSessionByUser(user)
+                .orElseThrow(() -> new SessionNotFoundException("Session not found"));
+
+        List<UserDTO> userList = userSessionRepository.findAllBySession(userSession.getSession()).stream()
                 .map(UserSession::getUser)
                 .map(UserMapper.INSTANCE::toDomain)
                 .toList();
 
         return SessionResponse.builder()
-                .id(session.getId())
-                .code(session.getInviteCode())
+                .id(userSession.getSession().getId())
+                .code(userSession.getSession().getInviteCode())
                 .users(userList).build();
     }
 
 
+    @Transactional
     public Session createSession(String username){
         User user = userService.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
@@ -69,12 +76,11 @@ public class UserSessionService {
                 .inviteCode(code)
                 .creator(user).build();
         sessionService.saveSession(session);
-
-
+        
         UserSession userSession = UserSession.builder()
                 .session(session)
                 .user(user).build();
-        this.saveUserSession(userSession);
+        userSessionRepository.save(userSession);
 
         return session;
     }
@@ -108,7 +114,8 @@ public class UserSessionService {
         User user = userService.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-        UserSession userSession = userSessionRepository.findUserSessionByUser(user);
+        UserSession userSession = userSessionRepository.findUserSessionByUser(user)
+                .orElseThrow(() -> new SessionNotFoundException("Session not found"));
         userSessionRepository.delete(userSession);
     }
 }

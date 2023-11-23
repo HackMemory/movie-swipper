@@ -5,8 +5,10 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Max;
 import lombok.*;
 
+@Builder
 @Entity(name = "movie_session")
-@RequiredArgsConstructor
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
 public class MovieSession {
@@ -15,8 +17,7 @@ public class MovieSession {
     private Long id;
 
     @NotNull
-    @Max(64)
-    private String tmdb_movie_id;
+    private Long tmdbMovieId;
 
     @ManyToOne
     private User user;
