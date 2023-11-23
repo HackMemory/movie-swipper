@@ -3,6 +3,7 @@ package ru.ifmo.movieswipper.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -26,6 +27,7 @@ public class SessionController {
     private final UserSessionService userSessionService;
     private final UserService userService;
 
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_MODERATOR', 'ROLE_VIP')")
     @PostMapping("/create")
     public ResponseEntity<?> create(Authentication authentication) {
         Optional<User> user = userService.findByUsername(authentication.getName());
@@ -57,6 +59,7 @@ public class SessionController {
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Session not found");
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_MODERATOR', 'ROLE_VIP')")
     @DeleteMapping("/delete/{code}")
     public ResponseEntity<?> delete(Authentication authentication, @PathVariable String code) {
         Session session = sessionService.findByCode(code)

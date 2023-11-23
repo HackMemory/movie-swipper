@@ -89,7 +89,6 @@ public class WebSecurityConfig {
                         request
                                 .requestMatchers(
                                         "/error",
-                                        "/movie/**",
                                         "/auth/login",
                                         "/swagger-ui.html",
                                         "/swagger-ui/**",
