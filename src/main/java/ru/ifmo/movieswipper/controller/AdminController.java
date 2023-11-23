@@ -15,11 +15,10 @@ import ru.ifmo.movieswipper.service.AuthService;
 import ru.ifmo.movieswipper.service.UserService;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/admin")
 @RequiredArgsConstructor
-public class UserController {
+public class AdminController {
     private final AuthService authService;
-    private final UserService userService;
 
     @PreAuthorize("hasAnyAuthority('SCOPE_ROLE_ADMIN', 'SCOPE_ROLE_MODERATOR')")
     @PostMapping("/register")
