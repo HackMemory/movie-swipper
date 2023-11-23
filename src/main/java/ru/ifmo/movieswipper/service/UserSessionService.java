@@ -1,19 +1,17 @@
 package ru.ifmo.movieswipper.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 import ru.ifmo.movieswipper.exception.PermissionDeniedException;
-import ru.ifmo.movieswipper.exception.SessionNotFound;
+import ru.ifmo.movieswipper.exception.SessionNotFoundException;
 import ru.ifmo.movieswipper.exception.UserExistInSessionException;
 import ru.ifmo.movieswipper.model.Session;
 import ru.ifmo.movieswipper.model.User;
 import ru.ifmo.movieswipper.model.UserSession;
 import ru.ifmo.movieswipper.repository.UserSessionRepository;
 
-import java.util.Optional;
+import static ru.ifmo.movieswipper.util.StringUtils.generateRandomString;
 
 @Service
 @RequiredArgsConstructor
@@ -31,8 +29,41 @@ public class UserSessionService {
         return userSessionRepository.existsUserSessionByUserAndSession(user, session);
     }
 
-    public void join(Session session, String username){
-        User user = userService.findByUsername(username).orElseThrow();
+    public boolean checkIsUserPresent(User user){
+        return userSessionRepository.existsUserSessionByUser(user);
+    }
+
+
+    public Session createSession(String username){
+        User user = userService.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        if(this.checkIsUserPresent(user)){
+            throw new UserExistInSessionException("User already exists in session");
+        }
+
+        String code = generateRandomString(8);
+        Session session = Session.builder()
+                .inviteCode(code)
+                .creator(user).build();
+        sessionService.saveSession(session);
+
+
+        UserSession userSession = UserSession.builder()
+                .session(session)
+                .user(user).build();
+        this.saveUserSession(userSession);
+
+        return session;
+    }
+
+    public void joinSession(String username, String sessionCode){
+        Session session = sessionService.findByCode(sessionCode)
+                .orElseThrow(() -> new SessionNotFoundException("Session not found"));
+
+        User user = userService.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
         if(this.checkIsUserPresentInSession(user, session)){
             throw new UserExistInSessionException("User already exists in session");
         }
@@ -46,14 +77,14 @@ public class UserSessionService {
 
     public void deleteSession(String username, String sessionCode){
         Session session = sessionService.findByCode(sessionCode)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+                .orElseThrow(() -> new SessionNotFoundException("Session not found"));
 
         User user = userService.findByUsername(username)
-                .orElseThrow(() -> new SessionNotFound("User not found"));
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
 
         if(!session.getCreator().getId().equals(user.getId())){
-            throw new PermissionDeniedException("User does not have permission to delete this session");
+            throw new PermissionDeniedException("User doesn't have permission to delete this session");
         }
 
         sessionService.delete(session);
