@@ -3,6 +3,7 @@ package ru.ifmo.movieswipper.service;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -13,7 +14,10 @@ import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.stereotype.Service;
+import ru.ifmo.movieswipper.dto.UserDTO;
 import ru.ifmo.movieswipper.exception.NotFoundException;
+import ru.ifmo.movieswipper.exception.ParametersException;
+import ru.ifmo.movieswipper.mapper.UserMapper;
 import ru.ifmo.movieswipper.model.Role;
 import ru.ifmo.movieswipper.model.User;
 
@@ -51,6 +55,7 @@ public class AuthService {
         }
     }
 
+
     public String login(String username, String password) {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
 
@@ -74,8 +79,9 @@ public class AuthService {
 
     public void register(String username, String password) {
         Role roleUser = roleService.getMemberRole().orElseThrow();
-        userService.findByUsername(username)
-                .orElseThrow(()-> new UsernameNotFoundException("User not found"));
+        if (userService.findByUsername(username).isPresent()){
+            throw new ParametersException("User already exist");
+        }
 
         User user = User.builder()
                 .username(username)
@@ -89,7 +95,7 @@ public class AuthService {
         User user = userService.findByUsername(username)
                 .orElseThrow(()-> new UsernameNotFoundException("User not found"));
 
-        Role roleEntity = roleService.findByName(role)
+        Role roleEntity = roleService.findByName(role.toUpperCase())
                 .orElseThrow(()-> new NotFoundException("Role not found"));
 
         user.getRoles().clear();
