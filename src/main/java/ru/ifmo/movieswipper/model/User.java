@@ -37,7 +37,7 @@ public class User implements UserDetails {
             inverseJoinColumns = @JoinColumn(name = "genre_id"))
     private Set<Genre> genres;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "roles",
             joinColumns = @JoinColumn(name = "user_id"),

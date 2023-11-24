@@ -14,6 +14,7 @@ import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.stereotype.Service;
+import ru.ifmo.movieswipper.constant.RoleConstants;
 import ru.ifmo.movieswipper.dto.UserDTO;
 import ru.ifmo.movieswipper.exception.NotFoundException;
 import ru.ifmo.movieswipper.exception.ParametersException;
@@ -45,8 +46,16 @@ public class AuthService {
 
     @PostConstruct
     public void init() {
+        if (roleService.getModeratorRole().isEmpty())
+            roleService.saveRole(new Role(2L, RoleConstants.MODERATOR));
+        if (roleService.getVipRole().isEmpty())
+            roleService.saveRole(new Role(3L, RoleConstants.VIP));
+        if (roleService.getMemberRole().isEmpty())
+            roleService.saveRole(new Role(4L, RoleConstants.MEMBER));
+
+
         if (userService.findByUsername(rootUsername).isEmpty()) {
-            Role adminRole = roleService.getAdminRole().orElseThrow();
+            Role adminRole = roleService.getAdminRole().orElseGet(() -> roleService.saveRole(new Role(1L, RoleConstants.ADMIN)));
             User admin = User.builder()
                     .username(rootUsername)
                     .password(passwordEncoder.encode(rootPassword))
