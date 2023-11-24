@@ -22,7 +22,6 @@ import ru.ifmo.movieswipper.dto.request.LoginRequest;
 import ru.ifmo.movieswipper.dto.request.RegisterRequest;
 import ru.ifmo.movieswipper.model.User;
 import ru.ifmo.movieswipper.service.AuthService;
-import ru.ifmo.movieswipper.service.JwtService;
 import ru.ifmo.movieswipper.service.UserService;
 
 import static io.restassured.RestAssured.given;
@@ -59,13 +58,9 @@ public class ControllerTests {
     @Autowired
     public UserService userService;
 
-    @Autowired
-    public JwtService jwtService;
-
     private static User actualUser = null;
     private static User testUser = null;
     private static ObjectMapper objectMapper = new ObjectMapper();
-
     private static String testSessionCode = "";
 
     private static String tmdbTestMovie = "555";
