@@ -24,10 +24,8 @@ public class AuthController {
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request) {
         try {
             AuthResponse response = AuthResponse.builder()
-                    .token(
-                        authService.login(request.getUsername(), request.getPassword())
-                    ).build();
-
+                    .token(authService.login(request.getUsername(), request.getPassword()))
+                    .build();
             return ResponseEntity.ok(response);
         } catch (AuthenticationException exception) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, exception.getMessage());
