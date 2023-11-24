@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,8 +29,10 @@ public class AuthController {
                     ).build();
 
             return ResponseEntity.ok(response);
-        } catch (IllegalArgumentException exception) {
+        } catch (AuthenticationException exception) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, exception.getMessage());
+        } catch (Exception exception) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, exception.getMessage());
         }
     }
 

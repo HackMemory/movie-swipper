@@ -51,29 +51,24 @@ public class AuthService {
         }
     }
 
-    public String login(String username, String password) throws IllegalArgumentException {
-        //TODO fix exception
-        try {
-            Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+    public String login(String username, String password) {
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
 
-            Instant now = Instant.now();
-            List<String> roles = authentication.getAuthorities().stream()
-                    .map(GrantedAuthority::getAuthority)
-                    .toList();
+        Instant now = Instant.now();
+        List<String> roles = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .toList();
 
-            System.out.println(roles);
-            JwtClaimsSet claims = JwtClaimsSet.builder()
-                    .issuer("self")
-                    .issuedAt(now)
-                    .expiresAt(now.plusSeconds(expireTime))
-                    .subject(authentication.getName())
-                    .claim("roles", roles)
-                    .build();
+        System.out.println(roles);
+        JwtClaimsSet claims = JwtClaimsSet.builder()
+                .issuer("self")
+                .issuedAt(now)
+                .expiresAt(now.plusSeconds(expireTime))
+                .subject(authentication.getName())
+                .claim("roles", roles)
+                .build();
 
-            return encoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
-        }catch (Exception ex){
-            throw new IllegalArgumentException(ex.getMessage());
-        }
+        return encoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
     }
 
 
