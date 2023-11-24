@@ -19,9 +19,7 @@ import ru.ifmo.movieswipper.model.User;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor

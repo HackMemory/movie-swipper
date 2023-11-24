@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import ru.ifmo.movieswipper.dto.UserDTO;
-import ru.ifmo.movieswipper.model.User;
 
 import java.util.List;
 

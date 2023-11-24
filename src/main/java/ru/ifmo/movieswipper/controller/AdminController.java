@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import ru.ifmo.movieswipper.dto.request.RegisterRequest;
 import ru.ifmo.movieswipper.service.AuthService;
-import ru.ifmo.movieswipper.service.UserService;
 
 @RestController
 @RequestMapping("/admin")

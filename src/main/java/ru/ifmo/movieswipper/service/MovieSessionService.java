@@ -16,7 +16,6 @@ import ru.ifmo.movieswipper.model.UserSession;
 import ru.ifmo.movieswipper.repository.MovieSessionRepository;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service

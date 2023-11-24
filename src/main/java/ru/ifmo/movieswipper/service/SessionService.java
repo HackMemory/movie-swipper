@@ -3,7 +3,6 @@ package ru.ifmo.movieswipper.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import ru.ifmo.movieswipper.exception.SessionNotFoundException;
 import ru.ifmo.movieswipper.model.Session;
 import ru.ifmo.movieswipper.model.User;
 import ru.ifmo.movieswipper.repository.SessionRepository;

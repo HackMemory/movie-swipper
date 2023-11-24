@@ -1,12 +1,10 @@
 package ru.ifmo.movieswipper.config;
 
 import info.movito.themoviedbapi.TmdbApi;
-import info.movito.themoviedbapi.TmdbMovies;
 import info.movito.themoviedbapi.tools.WebBrowser;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
 
 @Configuration
 public class TmdbConfiguration {
