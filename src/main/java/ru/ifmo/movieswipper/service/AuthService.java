@@ -7,11 +7,13 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.stereotype.Service;
+import ru.ifmo.movieswipper.exception.NotFoundException;
 import ru.ifmo.movieswipper.model.Role;
 import ru.ifmo.movieswipper.model.User;
 
@@ -74,9 +76,8 @@ public class AuthService {
 
     public void register(String username, String password) {
         Role roleUser = roleService.getMemberRole().orElseThrow();
-        if (userService.findByUsername(username).isPresent()) {
-            throw new IllegalArgumentException("User exists");
-        }
+        userService.findByUsername(username)
+                .orElseThrow(()-> new UsernameNotFoundException("User not found"));
 
         User user = User.builder()
                 .username(username)
@@ -87,13 +88,16 @@ public class AuthService {
     }
 
     public void changeRole(String username, String role) {
-        Optional<User> optionalUserEntity = userService.findByUsername(username);
-        User userEntity = optionalUserEntity.orElseThrow();
-        Optional<Role> optionalRoleEntity = roleService.findByName(role);
-        Role roleEntity = optionalRoleEntity.orElseThrow();
-        userEntity.getRoles().clear();
-        userEntity.getRoles().add(roleEntity);
-        userService.saveUser(userEntity);
+        User user = userService.findByUsername(username)
+                .orElseThrow(()-> new UsernameNotFoundException("User not found"));
+
+        Role roleEntity = roleService.findByName(role)
+                .orElseThrow(()-> new NotFoundException("Role not found"));
+
+        user.getRoles().clear();
+        user.getRoles().add(roleEntity);
+
+        userService.saveUser(user);
     }
 
 }
