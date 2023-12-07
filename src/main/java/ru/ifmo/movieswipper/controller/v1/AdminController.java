@@ -1,4 +1,4 @@
-package ru.ifmo.movieswipper.controller;
+package ru.ifmo.movieswipper.controller.v1;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +15,7 @@ import ru.ifmo.movieswipper.service.AuthService;
 import ru.ifmo.movieswipper.service.UserService;
 
 @RestController
-@RequestMapping("/admin")
+@RequestMapping("api/v1/admin")
 @RequiredArgsConstructor
 public class AdminController {
     private final AuthService authService;
@@ -54,9 +54,9 @@ public class AdminController {
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_MODERATOR')")
     @GetMapping("/getUsersList")
-    public ResponseEntity<?> getUsersList(@RequestParam(defaultValue = "0") int page) {
+    public ResponseEntity<?> getUsersList() {
         try {
-            return ResponseEntity.ok(userService.getAllUsers(page));
+            return ResponseEntity.ok(userService.getAllUsers());
         } catch (NotFoundException exception) {
             throw new ResponseStatusException(
                     HttpStatus.NOT_FOUND, exception.getMessage(), exception);

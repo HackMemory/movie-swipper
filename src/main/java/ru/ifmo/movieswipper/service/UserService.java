@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.util.Streamable;
 import org.springframework.security.core.userdetails.*;
 import org.springframework.stereotype.Service;
 import ru.ifmo.movieswipper.dto.UserDTO;
@@ -13,6 +14,7 @@ import ru.ifmo.movieswipper.repository.UserRepository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -37,9 +39,8 @@ public class UserService implements UserDetailsService  {
                         .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 
-    public Page<UserDTO> getAllUsers(int page) {
-        Pageable pageable = PageRequest.of(page, 50);
-        return userRepository.findAll(pageable)
-                .map(UserMapper.INSTANCE::toDomain);
+    public List<UserDTO> getAllUsers() {
+        return Streamable.of(userRepository.findAll()).stream()
+                .map(UserMapper.INSTANCE::toDomain).toList();
     }
 }

@@ -1,4 +1,4 @@
-package ru.ifmo.movieswipper.controller;
+package ru.ifmo.movieswipper.controller.v1;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -12,7 +12,7 @@ import org.springframework.web.server.ResponseStatusException;
 import ru.ifmo.movieswipper.service.MovieService;
 
 @RestController
-@RequestMapping("/movie")
+@RequestMapping("api/v1/movie")
 @RequiredArgsConstructor
 public class MovieController {
 

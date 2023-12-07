@@ -1,4 +1,4 @@
-package ru.ifmo.movieswipper.controller;
+package ru.ifmo.movieswipper.controller.v1;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,7 +16,7 @@ import ru.ifmo.movieswipper.service.MovieSessionService;
 import ru.ifmo.movieswipper.service.UserSessionService;
 
 @RestController
-@RequestMapping("/session")
+@RequestMapping("api/v1/session")
 @RequiredArgsConstructor
 public class SessionController {
 

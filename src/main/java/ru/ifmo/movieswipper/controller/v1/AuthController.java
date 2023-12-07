@@ -1,4 +1,4 @@
-package ru.ifmo.movieswipper.controller;
+package ru.ifmo.movieswipper.controller.v1;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +15,7 @@ import ru.ifmo.movieswipper.dto.response.AuthResponse;
 import ru.ifmo.movieswipper.service.AuthService;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("api/v1/auth")
 @RequiredArgsConstructor
 public class AuthController {
     private final AuthService authService;

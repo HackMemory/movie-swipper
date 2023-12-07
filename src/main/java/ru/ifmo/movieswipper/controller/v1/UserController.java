@@ -1,4 +1,4 @@
-package ru.ifmo.movieswipper.controller;
+package ru.ifmo.movieswipper.controller.v1;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -14,7 +14,7 @@ import ru.ifmo.movieswipper.mapper.UserMapper;
 import ru.ifmo.movieswipper.service.UserService;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("api/v1/user")
 @RequiredArgsConstructor
 public class UserController {
 
