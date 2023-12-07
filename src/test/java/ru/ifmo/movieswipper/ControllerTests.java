@@ -81,7 +81,7 @@ public class ControllerTests {
 
     @BeforeEach
     void setUp() {
-        RestAssured.baseURI = "http://localhost:" + port;
+        RestAssured.baseURI = "http://localhost:" + port + "/api/v1";
         RestAssured.defaultParser = Parser.JSON;
     }
 
@@ -217,21 +217,21 @@ public class ControllerTests {
     @Test
     @Order(11)
     void addRootMovieLike() throws JsonProcessingException {
-        basicPost("session/addMovie?tmdbMovieId=" + tmdbTestMovie + "&liked=true", rootUsername, rootPassword, "");
-        basicPost("session/addMovie?tmdbMovieId=100&liked=true", rootUsername, rootPassword, "");
+        basicPost("/session/addMovie?tmdbMovieId=" + tmdbTestMovie + "&liked=true", rootUsername, rootPassword, "");
+        basicPost("/session/addMovie?tmdbMovieId=100&liked=true", rootUsername, rootPassword, "");
     }
 
     @Test
     @Order(12)
     void addTestMovieLike() throws JsonProcessingException {
-        basicPost("session/addMovie?tmdbMovieId=" + tmdbTestMovie + "&liked=true", testUsername, testPassword, "");
-        basicPost("session/addMovie?tmdbMovieId=200&liked=true", testUsername, testPassword, "");
+        basicPost("/session/addMovie?tmdbMovieId=" + tmdbTestMovie + "&liked=true", testUsername, testPassword, "");
+        basicPost("/session/addMovie?tmdbMovieId=200&liked=true", testUsername, testPassword, "");
     }
 
     @Test
     @Order(13)
     void checkMatchMovies() throws JsonProcessingException {
-        basicGet("session/getMatchedMovies", rootUsername, rootPassword)
+        basicGet("/session/getMatchedMovies", rootUsername, rootPassword)
                 .body("[0].tmdbMovieId", equalTo(Integer.parseInt(tmdbTestMovie)))
                 .body("[0].users[0].username", equalTo(getTestUser().getUsername()));
     }

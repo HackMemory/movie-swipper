@@ -71,7 +71,7 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-                .csrf((csrf) -> csrf.ignoringRequestMatchers("/auth/login"))
+                .csrf((csrf) -> csrf.ignoringRequestMatchers("/api/v1/auth/login"))
                 .httpBasic(withDefaults())
                 .oauth2ResourceServer(oauth2 ->
                         oauth2.jwt(jwt ->
@@ -87,7 +87,7 @@ public class WebSecurityConfig {
                         request
                                 .requestMatchers(
                                         "/error",
-                                        "/auth/login",
+                                        "/api/v1/auth/login",
                                         "/swagger-ui.html",
                                         "/swagger-ui/**",
                                         "/v3/api-docs/**"
@@ -96,6 +96,7 @@ public class WebSecurityConfig {
 
                 .build();
     }
+
 
 
     @Bean
