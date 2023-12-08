@@ -1,5 +1,6 @@
 package ru.ifmo.movieswipper.controller.v1;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -8,6 +9,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import ru.ifmo.movieswipper.dto.request.SessionAddMovieRequest;
 import ru.ifmo.movieswipper.dto.response.SessionCreateResponse;
 import ru.ifmo.movieswipper.exception.SessionNotFoundException;
 import ru.ifmo.movieswipper.exception.UserExistInSessionException;
@@ -81,9 +83,9 @@ public class SessionController {
 
 
     @PostMapping("/addMovie")
-    public ResponseEntity<?> addMovie(Authentication authentication, Long tmdbMovieId, Boolean liked) {
+    public ResponseEntity<?> addMovie(Authentication authentication, @Valid @RequestBody SessionAddMovieRequest request) {
         try {
-            movieSessionService.addMovie(authentication.getName(), tmdbMovieId, liked);
+            movieSessionService.addMovie(authentication.getName(), request.getTmdbMovieId(), request.getLiked());
             return ResponseEntity.ok().build();
         }catch (UsernameNotFoundException | SessionNotFoundException ex){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage());

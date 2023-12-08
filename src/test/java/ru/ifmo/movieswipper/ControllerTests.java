@@ -20,6 +20,7 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import ru.ifmo.movieswipper.dto.request.ChangeRoleRequest;
 import ru.ifmo.movieswipper.dto.request.LoginRequest;
 import ru.ifmo.movieswipper.dto.request.RegisterRequest;
+import ru.ifmo.movieswipper.dto.request.SessionAddMovieRequest;
 import ru.ifmo.movieswipper.model.User;
 import ru.ifmo.movieswipper.service.AuthService;
 import ru.ifmo.movieswipper.service.UserService;
@@ -63,7 +64,7 @@ public class ControllerTests {
     private static ObjectMapper objectMapper = new ObjectMapper();
     private static String testSessionCode = "";
 
-    private static String tmdbTestMovie = "555";
+    private static Long tmdbTestMovie = 555L;
 
     private static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(
             "postgres:latest"
@@ -217,22 +218,27 @@ public class ControllerTests {
     @Test
     @Order(11)
     void addRootMovieLike() throws JsonProcessingException {
-        basicPost("/session/addMovie?tmdbMovieId=" + tmdbTestMovie + "&liked=true", rootUsername, rootPassword, "");
-        basicPost("/session/addMovie?tmdbMovieId=100&liked=true", rootUsername, rootPassword, "");
+        basicPost("/session/addMovie", rootUsername, rootPassword,
+                objectMapper.writeValueAsString(new SessionAddMovieRequest(tmdbTestMovie, true)));
+        basicPost("/session/addMovie", rootUsername, rootPassword,
+                objectMapper.writeValueAsString(new SessionAddMovieRequest(100L, true)));
     }
 
     @Test
     @Order(12)
     void addTestMovieLike() throws JsonProcessingException {
-        basicPost("/session/addMovie?tmdbMovieId=" + tmdbTestMovie + "&liked=true", testUsername, testPassword, "");
-        basicPost("/session/addMovie?tmdbMovieId=200&liked=true", testUsername, testPassword, "");
+        basicPost("/session/addMovie", testUsername, testPassword,
+                objectMapper.writeValueAsString(new SessionAddMovieRequest(tmdbTestMovie, true)));
+
+        basicPost("/session/addMovie", testUsername, testPassword,
+                objectMapper.writeValueAsString(new SessionAddMovieRequest(200L, true)));
     }
 
     @Test
     @Order(13)
     void checkMatchMovies() throws JsonProcessingException {
         basicGet("/session/getMatchedMovies", rootUsername, rootPassword)
-                .body("[0].tmdbMovieId", equalTo(Integer.parseInt(tmdbTestMovie)))
+                .body("[0].tmdbMovieId", equalTo(tmdbTestMovie.intValue()))
                 .body("[0].users[0].username", equalTo(getTestUser().getUsername()));
     }
 }
