@@ -67,7 +67,7 @@ public class ControllerTests {
     private static Long tmdbTestMovie = 555L;
 
     private static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(
-            "postgres:latest"
+            "postgres:13-alpine"
     );
 
     @BeforeAll

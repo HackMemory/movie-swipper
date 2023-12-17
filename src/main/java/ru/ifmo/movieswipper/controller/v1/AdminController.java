@@ -38,7 +38,7 @@ public class AdminController {
 
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_MODERATOR')")
-    @PostMapping("/changeRole")
+    @PostMapping("/change-role")
     public ResponseEntity<?> changeRole(@Valid @RequestBody ChangeRoleRequest request) {
         try {
             authService.changeRole(request.getUsername(), request.getRole());
@@ -53,7 +53,7 @@ public class AdminController {
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_MODERATOR')")
-    @GetMapping("/getUsersList")
+    @GetMapping("/user-list")
     public ResponseEntity<?> getUsersList() {
         try {
             return ResponseEntity.ok(userService.getAllUsers());

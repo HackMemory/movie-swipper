@@ -82,7 +82,7 @@ public class SessionController {
     }
 
 
-    @PostMapping("/addMovie")
+    @PostMapping("/add-movie")
     public ResponseEntity<?> addMovie(Authentication authentication, @Valid @RequestBody SessionAddMovieRequest request) {
         try {
             movieSessionService.addMovie(authentication.getName(), request.getTmdbMovieId(), request.getLiked());
@@ -92,7 +92,7 @@ public class SessionController {
         }
     }
 
-    @GetMapping("/getLikedMovies")
+    @GetMapping("/liked-movies")
     public ResponseEntity<?> getLikedMovies(Authentication authentication) {
         try {
             return ResponseEntity.ok(movieSessionService.getLikedMovies(authentication.getName()));
@@ -101,7 +101,7 @@ public class SessionController {
         }
     }
 
-    @GetMapping("/getMatchedMovies")
+    @GetMapping("/matched-movies")
     public ResponseEntity<?> getMatchedMovies(Authentication authentication) {
         try {
             return ResponseEntity.ok(movieSessionService.getMatchedMovies(authentication.getName()));

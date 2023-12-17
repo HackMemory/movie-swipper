@@ -8,6 +8,8 @@ services:
       - POSTGRES_DB=$POSTGRES_DB
       - POSTGRES_USER=$POSTGRES_USER
       - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
+    volumes:
+      - pg_volume:/var/lib/postgresql/data
   app:
     depends_on:
       - db
@@ -15,5 +17,6 @@ services:
     env_file: ./.env
     ports:
       - $SPRING_PORT:$SPRING_PORT
+
 volumes:
-  db:
+  pg_volume:
