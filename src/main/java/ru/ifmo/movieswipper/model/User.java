@@ -7,10 +7,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Builder
 @Entity(name = "users")
@@ -44,6 +41,10 @@ public class User implements UserDetails {
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     @NotNull
     private Set<Role> roles;
+
+    public Set<Role> getRoles() {
+        return new HashSet<>(roles != null ? roles : Collections.emptySet());
+    }
 
 
     @Override

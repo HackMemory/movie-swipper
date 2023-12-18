@@ -1,7 +1,9 @@
 package ru.ifmo.movieswipper.service;
 
 import jakarta.annotation.PostConstruct;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -41,6 +43,8 @@ public class AuthService {
     @Value("${root.password}")
     private String rootPassword;
 
+    @Getter
+    @Setter
     @Value("${token.expire}")
     private Long expireTime;
 
@@ -77,7 +81,7 @@ public class AuthService {
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuer("self")
                 .issuedAt(now)
-                .expiresAt(now.plusSeconds(expireTime))
+                .expiresAt(now.plusSeconds(getExpireTime()))
                 .subject(authentication.getName())
                 .claim("roles", roles)
                 .build();
