@@ -18,6 +18,14 @@ spring:
         - StripPrefix=1
         - RewritePath=/(?<path>.*), ${context-path}/$\{path}
 
+      routes:
+        - id: auth
+          uri: lb://auth-service
+          predicates:
+            - Path=/auth-service/login
+
+
+
 eureka:
   client:
     registryFetchIntervalSeconds: 5

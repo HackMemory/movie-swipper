@@ -1,0 +1,21 @@
+server:
+  port: 0
+  error:
+    include-message: always
+  servlet:
+    context-path: /api/v1
+
+eureka:
+  client:
+    registryFetchIntervalSeconds: 5
+    service-url:
+      defaultZone: ${EUREKA_URL:http://localhost:8761/eureka}
+  instance:
+    instance-id: ${spring.application.name}:${random.value}
+
+
+jwt:
+  private:
+    key: classpath:jwt.pem
+  public:
+    key: classpath:jwt.pub

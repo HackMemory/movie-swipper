@@ -70,6 +70,24 @@ services:
       - CONFIG_URL=http://config-server:9999
       - EUREKA_URL=http://eureka-server:8761/eureka
 
+  user-service:
+    build:
+      context: .
+      dockerfile: user-service/Dockerfile
+    container_name: user-service
+    environment:
+      - TZ=Europe/Moscow
+      - POSTGRES_URL=$POSTGRES_URL
+      - POSTGRES_USERNAME=$POSTGRES_USER
+      - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
+      - CONFIG_URL=http://config-server:9999
+      - EUREKA_URL=http://eureka-server:8761/eureka
+    restart: always
+    depends_on:
+      - db
+      - eureka-server
+      - config-server
+
 
   auth-service:
     build:
@@ -77,12 +95,8 @@ services:
       dockerfile: auth-service/Dockerfile
     restart: always
     container_name: auth-service
-    ports:
-    - "8782:8782"
     depends_on:
-      - db
-      - eureka-server
-      - config-server
+      - user-service
     environment:
       - TZ=Europe/Moscow
       - POSTGRES_URL=$POSTGRES_URL_R2

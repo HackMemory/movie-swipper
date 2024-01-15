@@ -1,12 +1,8 @@
 HELP.md
 target/
-.jpb/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
-
-.env
-.env-dev
 
 ### STS ###
 .apt_generated
@@ -35,9 +31,3 @@ build/
 
 ### VS Code ###
 .vscode/
-/src/main/resources/jwt.pem
-/src/main/resources/jwt.pub
-
-/config-server/src/main/resources/config/jwt.pem
-/config-server/src/main/resources/config/jwt.pub
-project.code-workspace
