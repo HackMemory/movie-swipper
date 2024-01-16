@@ -41,3 +41,6 @@ eureka:
 root:
   username: root
   password: toor
+
+token:
+  expire: 3600

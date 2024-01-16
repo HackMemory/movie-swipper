@@ -22,7 +22,12 @@ spring:
         - id: auth
           uri: lb://auth-service
           predicates:
-            - Path=/auth-service/login
+            - Path=/auth/login
+        
+        - id: user
+          uri: lb://user-service
+          predicates:
+            - Path=/user-service/users/me
 
 
 
@@ -42,3 +47,13 @@ logging:
   level:
     org.springframework.cloud.gateway.handler.RoutePredicateHandlerMapping: trace
     io.github.resilience4j: debug
+
+
+management:
+  endpoint:
+    gateway:
+      enabled: true # default value
+  endpoints:
+    web:
+      exposure:
+        include: gateway

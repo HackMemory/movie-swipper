@@ -5,6 +5,16 @@ server:
   servlet:
     context-path: /api/v1
 
+spring:
+  jackson:
+    time-zone: Europe/Moscow
+  web:
+    locale: en_US
+  cloud:
+    loadbalancer:
+      cache:
+        enabled: false
+
 eureka:
   client:
     registryFetchIntervalSeconds: 5
@@ -13,9 +23,5 @@ eureka:
   instance:
     instance-id: ${spring.application.name}:${random.value}
 
-
-jwt:
-  private:
-    key: classpath:jwt.pem
-  public:
-    key: classpath:jwt.pub
+token:
+  expire: 3600

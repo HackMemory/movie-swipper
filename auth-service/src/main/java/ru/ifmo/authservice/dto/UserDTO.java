@@ -1,4 +1,4 @@
-package ru.ifmo.userservice.dto;
+package ru.ifmo.authservice.dto;
 
 import java.util.Set;
 
@@ -6,8 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import ru.ifmo.userservice.model.Genre;
-import ru.ifmo.userservice.model.Role;
+import ru.ifmo.authservice.model.Genre;
+import ru.ifmo.authservice.model.Role;
 
 @Getter
 @Setter

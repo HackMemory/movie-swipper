@@ -35,9 +35,8 @@ build/
 
 ### VS Code ###
 .vscode/
-/src/main/resources/jwt.pem
-/src/main/resources/jwt.pub
 
-/config-server/src/main/resources/config/jwt.pem
-/config-server/src/main/resources/config/jwt.pub
 project.code-workspace
+
+jwt.pem
+jwt.pub

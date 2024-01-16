@@ -3,3 +3,9 @@ spring:
     name: user-service
   config:
     import: configserver:${CONFIG_URL:http://localhost:9999}
+
+jwt:
+  private:
+    key: classpath:jwt.pem
+  public:
+    key: classpath:jwt.pub
