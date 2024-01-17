@@ -17,6 +17,7 @@ import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import ru.ifmo.userservice.dto.UserDTO;
+import ru.ifmo.userservice.dto.request.ChangeRoleRequest;
 import ru.ifmo.userservice.dto.request.RegisterRequest;
 import ru.ifmo.userservice.exception.NotFoundException;
 import ru.ifmo.userservice.mapper.UserMapper;
@@ -75,5 +76,21 @@ public class UserServiceController {
                     HttpStatus.FORBIDDEN, ex.getMessage(), ex);
         }
     }
+
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_MODERATOR')")
+    @PostMapping("/changeRole")
+    public ResponseEntity<?> changeRole(@Valid @RequestBody ChangeRoleRequest request) {
+        try {
+            userService.changeRole(request.getUsername(), request.getRole());
+            return ResponseEntity.ok().build();
+        } catch (IllegalArgumentException exception) {
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN, exception.getMessage(), exception);
+        } catch (NotFoundException exception){
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, exception.getMessage(), exception);
+        }
+    }
+
 
 }

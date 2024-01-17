@@ -17,6 +17,7 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import ru.ifmo.userservice.constant.RoleConstants;
 import ru.ifmo.userservice.dto.UserDTO;
+import ru.ifmo.userservice.exception.NotFoundException;
 import ru.ifmo.userservice.exception.ParametersException;
 import ru.ifmo.userservice.mapper.UserMapper;
 import ru.ifmo.userservice.model.Role;
@@ -74,7 +75,18 @@ public class UserService implements UserDetailsService  {
         saveUser(user);
     }
 
+    public void changeRole(String username, String role) {
+        User user = findByUsername(username)
+                .orElseThrow(()-> new UsernameNotFoundException("User not found"));
 
+        Role roleEntity = roleService.findByName(role.toUpperCase())
+                .orElseThrow(()-> new NotFoundException("Role not found"));
+
+        user.getRoles().clear();
+        user.getRoles().add(roleEntity);
+
+        saveUser(user);
+    }
 
 
     public User saveUser(User userEntity) {
