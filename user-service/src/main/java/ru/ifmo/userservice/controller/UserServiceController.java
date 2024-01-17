@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import ru.ifmo.userservice.dto.UserDTO;
@@ -44,6 +45,7 @@ public class UserServiceController {
         }
     }
 
+    @Hidden
     @GetMapping("/{username}")
     public ResponseEntity<UserDTO> getUser(@PathVariable String username) {
         try {
@@ -56,6 +58,7 @@ public class UserServiceController {
         }
     }
 
+    @Hidden
     @GetMapping("/me")
     public ResponseEntity<?> getCurrent(Authentication authentication) {
         try {
