@@ -17,17 +17,36 @@ spring:
       default-filters:
         - StripPrefix=1
         - RewritePath=/(?<path>.*), ${context-path}/$\{path}
-
       routes:
+        - id: auth-openapi
+          uri: lb://auth-service
+          predicates:
+            - Path=/auth-service/v3/api-docs, /auth-service/swagger-ui/**
+
+        - id: user-openapi
+          uri: lb://user-service
+          predicates:
+            - Path=/user-service/v3/api-docs, /user-service/swagger-ui/**
+
         - id: auth
           uri: lb://auth-service
           predicates:
-            - Path=/auth/login
+            - Path=/auth-service/auth/login, /auth-service/token/validate
+
+        - id: admin
+          uri: lb://user-service
+          predicates:
+            - Path=/user-service/users/register
+          filters:
+            - AuthenticationFilter
         
         - id: user
           uri: lb://user-service
           predicates:
             - Path=/user-service/users/me
+          filters:
+            - AuthenticationFilter
+
 
 
 
@@ -57,3 +76,4 @@ management:
     web:
       exposure:
         include: gateway
+

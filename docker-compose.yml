@@ -75,6 +75,8 @@ services:
       context: .
       dockerfile: user-service/Dockerfile
     container_name: user-service
+    ports:
+      - "8781:8781"
     environment:
       - TZ=Europe/Moscow
       - POSTGRES_URL=$POSTGRES_URL
@@ -95,6 +97,8 @@ services:
       dockerfile: auth-service/Dockerfile
     restart: always
     container_name: auth-service
+    ports:
+      - "8782:8782"
     depends_on:
       - user-service
     environment:

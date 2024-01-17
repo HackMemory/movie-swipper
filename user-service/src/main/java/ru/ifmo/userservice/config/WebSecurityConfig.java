@@ -44,6 +44,20 @@ import com.nimbusds.jose.proc.SecurityContext;
 @EnableWebSecurity
 @EnableMethodSecurity
 public class WebSecurityConfig {
+
+    private static final String[] WHITELIST = {
+        "/v3/api-docs",
+        "/swagger-resources",
+        "/swagger-resources/**",
+        "/configuration/ui",
+        "/configuration/security",
+        "/swagger-ui.html",
+        "/webjars/**",
+        "/v3/api-docs/**",
+        "/swagger-ui/**"
+    };
+
+
     @Value("${jwt.public.key}")
     private RSAPublicKey public_key;
     @Value("${jwt.private.key}")
@@ -86,6 +100,7 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(req -> req
                                 .requestMatchers("/users/register").authenticated()
                                 .requestMatchers("/users/me").authenticated()
+                                .requestMatchers(WHITELIST).permitAll()
                                 .anyRequest().permitAll())
                 .build();
     }

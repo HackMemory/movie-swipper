@@ -11,7 +11,7 @@ import ru.ifmo.authservice.dto.UserDTO;
 
 @FeignClient(name = "user-service", path = "${server.servlet.context-path}")
 public interface UserServiceClient {
-    @GetMapping("/{username}")
+    @GetMapping("/users/{username}")
     @CircuitBreaker(name = "UserServiceClientCB")
     ResponseEntity<UserDTO> getUser(@PathVariable String username);
 }
