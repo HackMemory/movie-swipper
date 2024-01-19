@@ -126,5 +126,20 @@ services:
       - EUREKA_URL=http://eureka-server:8761/eureka
       - TMDB_API_KEY=$TMDB_API_KEY
 
+  websocket-service:
+    env_file: ./.env
+    ports:
+      - "9898:9898"
+    build:
+      context: .
+      dockerfile: websocket-service/Dockerfile
+    restart: always
+    container_name: websocket-service
+    depends_on:
+      - eureka-server
+    environment:
+      - CONFIG_URL=http://config-server:9999
+      - EUREKA_URL=http://eureka-server:8761/eureka
+
 volumes:
   pg_volume:
