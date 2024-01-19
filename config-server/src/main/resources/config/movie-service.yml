@@ -1,0 +1,37 @@
+server:
+  port: 0
+  error:
+    include-message: always
+
+tmdb:
+  api_key: ${TMDB_API_KEY}
+  
+spring:
+  webflux:
+    base-path: /api/v1
+  jackson:
+    time-zone: Europe/Moscow
+  web:
+    locale: en_US
+  cloud:
+    loadbalancer:
+      cache:
+        enabled: false
+
+eureka:
+  client:
+    registryFetchIntervalSeconds: 5
+    service-url:
+      defaultZone: ${EUREKA_URL:http://localhost:8761/eureka}
+  instance:
+    instance-id: ${spring.application.name}:${random.value}
+
+reactive:
+  feign:
+    circuit:
+      breaker:
+        enabled: false
+
+logging:
+  level:
+    org.springframework.data.r2dbc: debug

@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: movie-service
+  config:
+    import: configserver:${CONFIG_URL:http://localhost:9999}
+  main:
+    web-application-type: reactive

@@ -29,6 +29,7 @@ services:
       - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
       - CONFIG_URL=http://config-server:9999
       - EUREKA_URL=http://eureka-server:8761/eureka
+      - TMDB_API_KEY=$TMDB_API_KEY
 
   eureka-server:
     env_file: ./.env
@@ -71,12 +72,11 @@ services:
       - EUREKA_URL=http://eureka-server:8761/eureka
 
   user-service:
+    env_file: ./.env
     build:
       context: .
       dockerfile: user-service/Dockerfile
     container_name: user-service
-    ports:
-      - "8781:8781"
     environment:
       - TZ=Europe/Moscow
       - POSTGRES_URL=$POSTGRES_URL
@@ -92,13 +92,12 @@ services:
 
 
   auth-service:
+    env_file: ./.env
     build:
       context: .
       dockerfile: auth-service/Dockerfile
     restart: always
     container_name: auth-service
-    ports:
-      - "8782:8782"
     depends_on:
       - user-service
     environment:
@@ -108,6 +107,24 @@ services:
       - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
       - CONFIG_URL=http://config-server:9999
       - EUREKA_URL=http://eureka-server:8761/eureka
+
+  movie-service:
+    env_file: ./.env
+    build:
+      context: .
+      dockerfile: movie-service/Dockerfile
+    restart: always
+    container_name: movie-service
+    depends_on:
+      - user-service
+    environment:
+      - TZ=Europe/Moscow
+      - POSTGRES_URL=$POSTGRES_URL_R2
+      - POSTGRES_USERNAME=$POSTGRES_USER
+      - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
+      - CONFIG_URL=http://config-server:9999
+      - EUREKA_URL=http://eureka-server:8761/eureka
+      - TMDB_API_KEY=$TMDB_API_KEY
 
 volumes:
   pg_volume:

@@ -28,6 +28,11 @@ spring:
           predicates:
             - Path=/user-service/v3/api-docs, /user-service/swagger-ui/**
 
+        - id: movie-openapi
+          uri: lb://movie-service
+          predicates:
+            - Path=/movie-service/v3/api-docs, /movie-service/swagger-ui/**
+
         - id: auth
           uri: lb://auth-service
           predicates:
@@ -44,6 +49,13 @@ spring:
           uri: lb://user-service
           predicates:
             - Path=/user-service/users/me
+          filters:
+            - AuthenticationFilter
+
+        - id: movie
+          uri: lb://movie-service
+          predicates:
+            - Path=/movie-service/movie/**, /movie-service/movie/movies-by-genre/**, /movie-service/movie/popular-movies/**, /movie-service/movie/genres-list
           filters:
             - AuthenticationFilter
 
