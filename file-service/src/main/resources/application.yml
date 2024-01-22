@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: file-service
+  config:
+    import: configserver:${CONFIG_URL:http://localhost:9999}

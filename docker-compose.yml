@@ -141,5 +141,22 @@ services:
       - CONFIG_URL=http://config-server:9999
       - EUREKA_URL=http://eureka-server:8761/eureka
 
+  
+  file-service:
+    env_file: ./.env
+    build:
+      context: .
+      dockerfile: file-service/Dockerfile
+    restart: always
+    container_name: file-service
+    depends_on:
+      - eureka-server
+    environment:
+      - CONFIG_URL=http://config-server:9999
+      - EUREKA_URL=http://eureka-server:8761/eureka
+      - POSTGRES_URL=$POSTGRES_URL
+      - POSTGRES_USERNAME=$POSTGRES_USER
+      - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
+
 volumes:
   pg_volume:
