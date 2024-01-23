@@ -44,3 +44,8 @@ root:
 
 token:
   expire: 3600
+
+
+subscribe-topic: /topic/requests
+destination-topic: /queue/responses
+ws-server: ${WS_SERVER_URL:ws://localhost:9898/movieswipper-ws}

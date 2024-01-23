@@ -1,0 +1,30 @@
+server:
+  port: 0
+  error:
+    include-message: always
+  servlet:
+    context-path: /api/v1
+
+spring:
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+    username: ${GMAIL_MAIL}
+    password: ${GOOGLE_APP_PASS}
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_URL:http://localhost:8761/eureka}
+  instance:
+    instance-id: ${spring.application.name}:${random.value}
+
+subscribe-topic: /queue/responses
+destination-topic: /topic/requests
+ws-server: ${WS_SERVER_URL:ws://localhost:9898/movieswipper-ws}

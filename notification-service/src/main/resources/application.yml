@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: notification-service
+  config:
+    import: configserver:${CONFIG_URL:http://localhost:9999}
+
+logging:
+  level:
+    root: trace

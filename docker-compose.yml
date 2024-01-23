@@ -84,6 +84,7 @@ services:
       - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
       - CONFIG_URL=http://config-server:9999
       - EUREKA_URL=http://eureka-server:8761/eureka
+      - WS_SERVER_URL=ws://websocket-service:9898/movieswipper-ws
     restart: always
     depends_on:
       - db
@@ -157,6 +158,22 @@ services:
       - POSTGRES_URL=$POSTGRES_URL
       - POSTGRES_USERNAME=$POSTGRES_USER
       - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
+
+  notification-service:
+    env_file: ./.env
+    build:
+      context: .
+      dockerfile: notification-service/Dockerfile
+    restart: always
+    container_name: notification-service
+    depends_on:
+      - eureka-server
+    environment:
+      - CONFIG_URL=http://config-server:9999
+      - EUREKA_URL=http://eureka-server:8761/eureka
+      - GMAIL_MAIL=$GMAIL_MAIL
+      - GOOGLE_APP_PASS=$GOOGLE_APP_PASS
+      - WS_SERVER_URL=ws://websocket-service:9898/movieswipper-ws
 
 volumes:
   pg_volume:
