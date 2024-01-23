@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import ru.ifmo.userservice.client.FileServiceClient;
 import ru.ifmo.userservice.constant.RoleConstants;
 import ru.ifmo.userservice.dto.FileDTO;
+import ru.ifmo.userservice.dto.FileInfoDto;
 import ru.ifmo.userservice.dto.UserDTO;
 import ru.ifmo.userservice.exception.NotFoundException;
 import ru.ifmo.userservice.exception.ParametersException;
@@ -26,6 +27,7 @@ import ru.ifmo.userservice.mapper.UserMapper;
 import ru.ifmo.userservice.model.Role;
 import ru.ifmo.userservice.model.User;
 import ru.ifmo.userservice.repository.UserRepository;
+import ru.ifmo.userservice.websocket.WsFileUploadSender;
 
 @Service
 @RequiredArgsConstructor
@@ -34,6 +36,7 @@ public class UserService {
     private final RoleService roleService;
     private final PasswordEncoder passwordEncoder;
     private final FileServiceClient fileServiceClient;
+    private final WsFileUploadSender fileUploadSender;
 
     @Value("${root.username}")
     private String rootUsername;
@@ -106,9 +109,25 @@ public class UserService {
         if(response.getStatusCode().is2xxSuccessful()){
             user.setAvatarPath(response.getBody().getUuid());
             saveUser(user);
+
+            FileInfoDto fileInfoDto = FileInfoDto.builder()
+                            .email(user.getEmail())
+                            .uuid(response.getBody().getUuid()).build();
+
+
+            fileUploadSender.sendMessage(fileInfoDto);
         } else {
             throw new StorageException("Error occured");
         }
+    }
+
+    @Transactional
+    public void changeEmail(String newEmail, String username) {
+        User user = findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        user.setEmail(newEmail);
+        userRepository.save(user);
     }
 
     public User saveUser(User userEntity) {

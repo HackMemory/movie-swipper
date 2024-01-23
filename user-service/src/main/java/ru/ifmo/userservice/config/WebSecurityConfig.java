@@ -76,6 +76,7 @@ public class WebSecurityConfig {
                             .requestMatchers("/users/me").authenticated()
                             .requestMatchers("/users/upload-avatar").authenticated()
                             .requestMatchers("/users/change-role").authenticated()
+                            .requestMatchers("/users/change-email").authenticated()
                         .anyRequest().permitAll())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class);

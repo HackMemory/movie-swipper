@@ -48,6 +48,8 @@ public class User implements UserDetails {
 
     private String avatarPath;
 
+    private String email;
+
     @ManyToMany
     @JoinTable(
             name = "genres",

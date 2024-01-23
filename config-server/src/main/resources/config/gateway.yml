@@ -48,7 +48,7 @@ spring:
         - id: user
           uri: lb://user-service
           predicates:
-            - Path=/user-service/users/upload-avatar, /user-service/users/me
+            - Path=/user-service/users/upload-avatar, /user-service/users/change-email
           filters:
             - AuthenticationFilter
 

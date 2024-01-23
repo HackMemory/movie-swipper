@@ -1,5 +1,8 @@
 package ru.ifmo.userservice.controller;
 
+import java.io.IOException;
+
+import org.apache.tika.Tika;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,6 +22,7 @@ import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import ru.ifmo.userservice.dto.UserDTO;
+import ru.ifmo.userservice.dto.request.ChangeEmailRequest;
 import ru.ifmo.userservice.dto.request.ChangeRoleRequest;
 import ru.ifmo.userservice.dto.request.RegisterRequest;
 import ru.ifmo.userservice.exception.NotFoundException;
@@ -99,11 +103,30 @@ public class UserServiceController {
     @PostMapping("/upload-avatar")
     public ResponseEntity<?> uploadAvatar(Authentication authentication, @RequestParam("file") MultipartFile file) {
         try{
+            String mimeType = new Tika().detect(file.getInputStream());
+            if (!mimeType.startsWith("image/")) {
+                throw new IllegalArgumentException("Only image files are allowed.");
+            }
+        
             System.out.println(authentication.getName());
             userService.uploadAvatar(file, authentication.getName());
 
             return ResponseEntity.ok().build();
-        } catch (UsernameNotFoundException | StorageException ex) {
+        } catch (UsernameNotFoundException | StorageException | IOException  ex) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, ex.getMessage(), ex);
+        }
+    }
+
+
+    @PostMapping("/change-email")
+    public ResponseEntity<?> changeEmail(
+            Authentication authentication,
+            @Valid @RequestBody ChangeEmailRequest request) {
+        try {
+            userService.changeEmail(request.getEmail(), authentication.getName());
+            return ResponseEntity.ok().build();
+        } catch (UsernameNotFoundException | IllegalArgumentException ex) {
             throw new ResponseStatusException(
                     HttpStatus.NOT_FOUND, ex.getMessage(), ex);
         }
