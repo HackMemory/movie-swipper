@@ -2,6 +2,7 @@ package ru.ifmo.fileservice.controller;
 
 import java.util.NoSuchElementException;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -17,6 +18,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import io.swagger.v3.oas.annotations.Hidden;
 import lombok.RequiredArgsConstructor;
+import ru.ifmo.fileservice.dto.FileDTO;
 import ru.ifmo.fileservice.exception.StorageException;
 import ru.ifmo.fileservice.model.FileDB;
 import ru.ifmo.fileservice.model.User;
@@ -27,14 +29,15 @@ import ru.ifmo.fileservice.service.FileService;
 @RequiredArgsConstructor
 public class FileController {
 
-    private FileService fileService;
+    @Autowired
+    private final FileService fileService;
 
     @Hidden
     @PostMapping("/upload")
-    public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file, Long userID) {
+    public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file, @RequestParam("userID") Long userID) {
         try {
-            fileService.store(file, User.builder().id(userID).build());
-            return ResponseEntity.ok().build();
+            FileDTO fileDTO = fileService.store(file, User.builder().id(userID).build());
+            return ResponseEntity.ok(fileDTO);
         } catch (StorageException e) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
         }

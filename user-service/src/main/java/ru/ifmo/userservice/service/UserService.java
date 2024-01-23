@@ -6,19 +6,22 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.util.Streamable;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import ru.ifmo.userservice.client.FileServiceClient;
 import ru.ifmo.userservice.constant.RoleConstants;
+import ru.ifmo.userservice.dto.FileDTO;
 import ru.ifmo.userservice.dto.UserDTO;
 import ru.ifmo.userservice.exception.NotFoundException;
 import ru.ifmo.userservice.exception.ParametersException;
+import ru.ifmo.userservice.exception.StorageException;
 import ru.ifmo.userservice.mapper.UserMapper;
 import ru.ifmo.userservice.model.Role;
 import ru.ifmo.userservice.model.User;
@@ -26,11 +29,12 @@ import ru.ifmo.userservice.repository.UserRepository;
 
 @Service
 @RequiredArgsConstructor
-public class UserService implements UserDetailsService  {
+public class UserService {
     private final UserRepository userRepository;
     private final RoleService roleService;
     private final PasswordEncoder passwordEncoder;
-    
+    private final FileServiceClient fileServiceClient;
+
     @Value("${root.username}")
     private String rootUsername;
 
@@ -39,6 +43,7 @@ public class UserService implements UserDetailsService  {
 
     @Value("${token.expire}")
     private Long expireTime;
+
 
     @PostConstruct
     @Transactional
@@ -88,6 +93,23 @@ public class UserService implements UserDetailsService  {
         saveUser(user);
     }
 
+    public void uploadAvatar(MultipartFile file, String username) {
+        if(file.isEmpty()){
+            throw new StorageException("File is empty");
+        }
+
+        User user = findByUsername(username).
+                orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        
+        ResponseEntity<FileDTO> response = fileServiceClient.uploadFile(file, user.getId());
+        if(response.getStatusCode().is2xxSuccessful()){
+            user.setAvatarPath(response.getBody().getUuid());
+            saveUser(user);
+        } else {
+            throw new StorageException("Error occured");
+        }
+    }
 
     public User saveUser(User userEntity) {
         return userRepository.save(userEntity);
@@ -101,11 +123,11 @@ public class UserService implements UserDetailsService  {
         return userRepository.findByUsername(username);
     }
 
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userRepository.findByUsername(username)
-                        .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-    }
+    // @Override
+    // public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    //     return userRepository.findByUsername(username)
+    //                     .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    // }
 
     public List<UserDTO> getAllUsers() {
         return Streamable.of(userRepository.findAll()).stream()

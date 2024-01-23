@@ -41,16 +41,21 @@ spring:
         - id: admin
           uri: lb://user-service
           predicates:
-            - Path=/user-service/users/register
+            - Path=/user-service/users/register, /user-service/users/change-role
           filters:
             - AuthenticationFilter
         
         - id: user
           uri: lb://user-service
           predicates:
-            - Path=/user-service/users/me
+            - Path=/user-service/users/upload-avatar, /user-service/users/me
           filters:
             - AuthenticationFilter
+
+        - id: files
+          uri: lb://file-service
+          predicates:
+            - Path=/file-service/files/download/**
 
         - id: movie
           uri: lb://movie-service

@@ -10,7 +10,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import io.swagger.v3.oas.annotations.Hidden;
@@ -20,6 +22,7 @@ import ru.ifmo.userservice.dto.UserDTO;
 import ru.ifmo.userservice.dto.request.ChangeRoleRequest;
 import ru.ifmo.userservice.dto.request.RegisterRequest;
 import ru.ifmo.userservice.exception.NotFoundException;
+import ru.ifmo.userservice.exception.StorageException;
 import ru.ifmo.userservice.mapper.UserMapper;
 import ru.ifmo.userservice.model.User;
 import ru.ifmo.userservice.service.UserService;
@@ -78,7 +81,7 @@ public class UserServiceController {
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_MODERATOR')")
-    @PostMapping("/changeRole")
+    @PostMapping("/change-role")
     public ResponseEntity<?> changeRole(@Valid @RequestBody ChangeRoleRequest request) {
         try {
             userService.changeRole(request.getUsername(), request.getRole());
@@ -92,5 +95,17 @@ public class UserServiceController {
         }
     }
 
+    
+    @PostMapping("/upload-avatar")
+    public ResponseEntity<?> uploadAvatar(Authentication authentication, @RequestParam("file") MultipartFile file) {
+        try{
+            System.out.println(authentication.getName());
+            userService.uploadAvatar(file, authentication.getName());
 
+            return ResponseEntity.ok().build();
+        } catch (UsernameNotFoundException | StorageException ex) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, ex.getMessage(), ex);
+        }
+    }
 }

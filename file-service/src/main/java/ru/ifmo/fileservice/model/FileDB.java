@@ -2,10 +2,10 @@ package ru.ifmo.fileservice.model;
 
 import org.hibernate.annotations.GenericGenerator;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
-import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -28,7 +28,7 @@ public class FileDB {
     @Id
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "uuid2")
-    private String id;
+    private String uuid;
 
     @NotBlank
     private String filename;
@@ -36,7 +36,7 @@ public class FileDB {
     @ManyToOne
     private User user;
 
-    @Lob
+    @Column(name = "data", columnDefinition="bytea")
     @NotNull
     private byte[] data;
 }
