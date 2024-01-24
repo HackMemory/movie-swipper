@@ -96,7 +96,7 @@ public class UserService {
         saveUser(user);
     }
 
-    public void uploadAvatar(MultipartFile file, String username) {
+    public String uploadAvatar(MultipartFile file, String username) {
         if(file.isEmpty()){
             throw new StorageException("File is empty");
         }
@@ -116,6 +116,8 @@ public class UserService {
 
 
             fileUploadSender.sendMessage(fileInfoDto);
+
+            return response.getBody().getUuid();
         } else {
             throw new StorageException("Error occured");
         }

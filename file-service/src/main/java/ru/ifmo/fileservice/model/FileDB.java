@@ -1,12 +1,8 @@
 package ru.ifmo.fileservice.model;
 
-import org.hibernate.annotations.GenericGenerator;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -18,7 +14,7 @@ import lombok.Setter;
 
 @Data
 @Builder
-@Entity(name = "files")
+@Table(name = "files")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -26,17 +22,16 @@ import lombok.Setter;
 public class FileDB {
     
     @Id
-    @GeneratedValue(generator = "uuid")
-    @GenericGenerator(name = "uuid", strategy = "uuid2")
+    private Long id;
+
+    @NotBlank
     private String uuid;
 
     @NotBlank
     private String filename;
 
-    @ManyToOne
-    private User user;
+    private Long userId;
 
-    @Column(name = "data", columnDefinition="bytea")
     @NotNull
     private byte[] data;
 }

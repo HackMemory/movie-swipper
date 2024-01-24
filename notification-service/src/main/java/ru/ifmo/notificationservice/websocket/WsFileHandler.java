@@ -90,7 +90,7 @@ public class WsFileHandler implements StompSessionHandler {
         message.setFrom("noreply@movieswipper.ru");
         message.setTo(fileInfoDto.getEmail());
         message.setSubject("MovieSwipper avatar update");
-        message.setText("You updated your avatar");
+        message.setText("You updated your avatar: " + fileInfoDto.getUuid());
 
         log.info("Message: {}", message);
         emailSender.send(message);

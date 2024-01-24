@@ -109,9 +109,9 @@ public class UserServiceController {
             }
         
             System.out.println(authentication.getName());
-            userService.uploadAvatar(file, authentication.getName());
+            String uuid = userService.uploadAvatar(file, authentication.getName());
 
-            return ResponseEntity.ok().build();
+            return ResponseEntity.ok(uuid);
         } catch (UsernameNotFoundException | StorageException | IOException  ex) {
             throw new ResponseStatusException(
                     HttpStatus.NOT_FOUND, ex.getMessage(), ex);

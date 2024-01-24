@@ -1,14 +1,19 @@
 package ru.ifmo.fileservice.repository;
 
-import java.util.Optional;
-
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.r2dbc.repository.Query;
+import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.stereotype.Repository;
 
+import reactor.core.publisher.Mono;
 import ru.ifmo.fileservice.model.FileDB;
-import ru.ifmo.fileservice.model.User;
 
 @Repository
-public interface FileRepository extends CrudRepository<FileDB, String> {
-    Optional<FileDB> findByUser(User user);
+public interface FileRepository extends ReactiveCrudRepository<FileDB, String> {
+    @Query("select * from files where user_id = :userId")
+    Mono<FileDB> findByUserId(Long userId);
+
+    @Query("select * from files where uuid = :uuid")
+    Mono<FileDB> findByUuid(String uuid);
+
+    Mono<Void> deleteByUuid(String uuid);
 }

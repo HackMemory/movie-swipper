@@ -1,4 +1,4 @@
-package ru.ifmo.fileservice.model;
+package ru.ifmo.sessionservice.model;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -7,8 +7,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.Table;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -23,13 +21,11 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Builder
-@Table(name = "users")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
 public class User implements UserDetails {
-    @Id
     private Long id;
 
     @NotBlank
@@ -40,7 +36,7 @@ public class User implements UserDetails {
     private String password;
 
     private Set<Genre> genres;
-
+    
     @NotNull
     private Set<Role> roles;
 

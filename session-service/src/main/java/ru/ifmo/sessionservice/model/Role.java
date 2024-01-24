@@ -1,7 +1,4 @@
-package ru.ifmo.fileservice.model;
-
-import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.Table;
+package ru.ifmo.sessionservice.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,9 +9,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "role")
 public class Role {
-    @Id
     private Long id;
+
     private String name;
 }

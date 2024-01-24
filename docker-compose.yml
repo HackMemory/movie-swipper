@@ -155,7 +155,7 @@ services:
     environment:
       - CONFIG_URL=http://config-server:9999
       - EUREKA_URL=http://eureka-server:8761/eureka
-      - POSTGRES_URL=$POSTGRES_URL
+      - POSTGRES_URL=$POSTGRES_URL_R2
       - POSTGRES_USERNAME=$POSTGRES_USER
       - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
 

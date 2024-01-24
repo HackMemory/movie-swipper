@@ -1,22 +1,23 @@
 package ru.ifmo.fileservice.service;
 
-import java.io.IOException;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.Resource;
+import org.springframework.core.io.buffer.DataBuffer;
+import org.springframework.core.io.buffer.DefaultDataBufferFactory;
+import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
-import org.springframework.web.multipart.MultipartFile;
 
 import lombok.RequiredArgsConstructor;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import ru.ifmo.fileservice.dto.FileDTO;
 import ru.ifmo.fileservice.exception.StorageException;
 import ru.ifmo.fileservice.model.FileDB;
-import ru.ifmo.fileservice.model.User;
 import ru.ifmo.fileservice.repository.FileRepository;
+import ru.ifmo.fileservice.util.FilePartUtils;
 
 @Service
 @RequiredArgsConstructor
@@ -25,41 +26,35 @@ public class FileService {
     @Autowired
     private final FileRepository fileRepository;
 
-    public FileDTO store(MultipartFile file, User user) throws StorageException {
-        if (file.isEmpty()) {
-            throw new StorageException("Failed to store empty file");
-        }
+    @Transactional
+    public Mono<FileDTO> store(Mono<FilePart> file, Long userId) {
+        return file.flatMap(filePart -> {   
+            String fileName = StringUtils.cleanPath(filePart.filename());
+            return FilePartUtils.toBytes(filePart)
+                .flatMap(bytes -> {
+                    FileDB fileDB = FileDB.builder()
+                        .uuid(UUID.randomUUID().toString())
+                        .data(bytes)
+                        .filename(fileName)
+                        .userId(userId)
+                        .build();
 
-        try {
-            String fileName = StringUtils.cleanPath(file.getOriginalFilename());
-            byte[] bytes = file.getBytes();
-
-            Optional<FileDB> fileDBOptional = fileRepository.findByUser(user);
-            if(fileDBOptional.isPresent()){
-                fileRepository.delete(fileDBOptional.get());
-            }
-
-            FileDB fileDB = FileDB.builder()
-                .filename(fileName)
-                .user(user)
-                .data(bytes).build();
-
-            fileDB = fileRepository.save(fileDB);
-            return new FileDTO(fileDB.getUuid());
-        } catch (IOException ex) {
-            throw new StorageException("Failed to store file", ex);
-        }
-    }
-
-    public FileDB getFile(String id) throws NoSuchElementException{
-        return fileRepository.findById(id).orElseThrow(
-            () -> new NoSuchElementException("File not found")
-        );
-    }
-
-    public Resource getFileAsResource(FileDB file) throws NoSuchElementException {
-        return new ByteArrayResource(file.getData());
+                    return fileRepository.findByUserId(userId)
+                        .flatMap(existingFile -> fileRepository.deleteByUuid(existingFile.getUuid())
+                                .then(fileRepository.save(fileDB)))
+                        .switchIfEmpty(fileRepository.save(fileDB))
+                        .map(savedFile -> new FileDTO(savedFile.getUuid()));
+            });
+        });
     }
 
 
+    public Mono<FileDB> getFile(String id) {
+        return fileRepository.findByUuid(id)
+                .switchIfEmpty(Mono.error(new StorageException("File not found")));
+    }
+
+    public Flux<DataBuffer> getFileAsResource(FileDB file) {
+        return Flux.defer(() -> Flux.just(new DefaultDataBufferFactory().wrap(file.getData())));
+    }
 }
