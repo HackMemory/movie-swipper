@@ -175,5 +175,21 @@ services:
       - GOOGLE_APP_PASS=$GOOGLE_APP_PASS
       - WS_SERVER_URL=ws://websocket-service:9898/movieswipper-ws
 
+  session-service:
+    env_file: ./.env
+    build:
+      context: .
+      dockerfile: session-service/Dockerfile
+    restart: always
+    container_name: session-service
+    depends_on:
+      - eureka-server
+    environment:
+      - CONFIG_URL=http://config-server:9999
+      - EUREKA_URL=http://eureka-server:8761/eureka
+      - POSTGRES_URL=$POSTGRES_URL
+      - POSTGRES_USERNAME=$POSTGRES_USER
+      - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
+
 volumes:
   pg_volume:

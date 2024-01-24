@@ -33,6 +33,16 @@ spring:
           predicates:
             - Path=/movie-service/v3/api-docs, /movie-service/swagger-ui/**
 
+        - id: file-openapi
+          uri: lb://file-service
+          predicates:
+            - Path=/file-service/v3/api-docs, /file-service/swagger-ui/**
+
+        - id: session-openapi
+          uri: lb://session-service
+          predicates:
+            - Path=/session-service/v3/api-docs, /session-service/swagger-ui/**
+
         - id: auth
           uri: lb://auth-service
           predicates:

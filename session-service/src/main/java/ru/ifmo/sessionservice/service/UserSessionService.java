@@ -5,6 +5,7 @@ import static ru.ifmo.sessionservice.util.StringUtils.generateRandomString;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -27,9 +28,10 @@ import ru.ifmo.sessionservice.repository.UserSessionRepository;
 @RequiredArgsConstructor
 public class UserSessionService {
     private final UserSessionRepository userSessionRepository;
-
-    private final UserServiceClient userServiceClient;
     private final SessionService sessionService;
+
+    @Autowired
+    private final UserServiceClient userServiceClient;
 
     public Optional<UserSession> findUserSessionByUser(User user){
         return userSessionRepository.findUserSessionByUser(user);
