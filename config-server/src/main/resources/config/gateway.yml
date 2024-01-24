@@ -64,6 +64,13 @@ spring:
           filters:
             - AuthenticationFilter
 
+        - id: session
+          uri: lb://session-service
+          predicates:
+            - Path=/session-service/session/current, /session-service/session/exit, /session-service/session/create, /session-service/session/join/**, /session-service/session/delete/**, /session-service/session/add-movie, /session-service/session/liked-movies, /session-service/session/matched-movies 
+          filters:
+            - AuthenticationFilter
+
 
 
 
@@ -88,7 +95,7 @@ logging:
 management:
   endpoint:
     gateway:
-      enabled: true # default value
+      enabled: true
   endpoints:
     web:
       exposure:

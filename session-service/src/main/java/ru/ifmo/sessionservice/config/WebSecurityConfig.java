@@ -24,7 +24,14 @@ public class WebSecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(req -> req
-                            .requestMatchers("").authenticated()
+                            .requestMatchers("/session/current").authenticated()
+                            .requestMatchers("/session/exit").authenticated()
+                            .requestMatchers("/session/create").authenticated()
+                            .requestMatchers("/session/join/**").authenticated()
+                            .requestMatchers("/session/delete/**").authenticated()
+                            .requestMatchers("/session/add-movie").authenticated()
+                            .requestMatchers("/session/liked-movies").authenticated()
+                            .requestMatchers("/session/matched-movies").authenticated()
                         .anyRequest().permitAll())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class);
