@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.data.util.Streamable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -31,6 +32,7 @@ import ru.ifmo.userservice.websocket.WsFileUploadSender;
 
 @Service
 @RequiredArgsConstructor
+@RefreshScope
 public class UserService {
     private final UserRepository userRepository;
     private final RoleService roleService;
@@ -46,6 +48,13 @@ public class UserService {
 
     @Value("${token.expire}")
     private Long expireTime;
+
+    @Value("${test.value}")
+    private String testValue;
+
+    public String getTestValue(){
+        return this.testValue;
+    }
 
 
     @PostConstruct

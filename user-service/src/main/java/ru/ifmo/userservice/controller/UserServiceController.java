@@ -131,4 +131,10 @@ public class UserServiceController {
                     HttpStatus.NOT_FOUND, ex.getMessage(), ex);
         }
     }
+
+
+    @GetMapping("/test")
+    public ResponseEntity<?> test(){
+        return ResponseEntity.ok(userService.getTestValue());
+    }
 }

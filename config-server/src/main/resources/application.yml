@@ -1,16 +1,21 @@
 server:
   port: 9999
 spring:
+  kafka:
+    bootstrap-servers:
+      - ${KAFKA_URL}
   application:
     name: config-server
-  profiles:
-    active: native
   cloud:
     config:
       server:
-        native:
-          search-locations: classpath:/config
-    fail-fast: false
+        git:
+          default-label: master
+          uri: https://github.com/HackMemory0/movie-swipper-config
+          clone-on-start: true
+    bus:
+      enabled: true
+      id: config-server
 
   #DB
   datasource:

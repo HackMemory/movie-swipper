@@ -5,6 +5,12 @@ spring:
     import: configserver:${CONFIG_URL:http://localhost:9999}
   main:
     web-application-type: reactive
+  cloud:
+    stream:
+      kafka:
+        binder:
+          brokers:
+            - ${KAFKA_URL}
 
 logging:
   level:

@@ -11,6 +11,33 @@ services:
     volumes:
       - pg_volume:/var/lib/postgresql/data
 
+  
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    container_name: zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+    ports:
+      - "22181:2181"
+
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    container_name: kafka
+    hostname: kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+      - "29092:29092"
+    environment:
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,EXTERNAL://kafka:29092
+      KAFKA_LISTENERS: PLAINTEXT://:9092,EXTERNAL://:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
+
   config-server:
     env_file: ./.env
     build:
@@ -22,6 +49,7 @@ services:
       - "9999:9999"
     depends_on:
       - db
+      - kafka
     environment:
       - TZ=Europe/Moscow
       - POSTGRES_URL=$POSTGRES_URL
@@ -30,6 +58,7 @@ services:
       - CONFIG_URL=http://config-server:9999
       - EUREKA_URL=http://eureka-server:8761/eureka
       - TMDB_API_KEY=$TMDB_API_KEY
+      - KAFKA_URL=http://kafka:29092
 
   eureka-server:
     env_file: ./.env
@@ -49,6 +78,7 @@ services:
       - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
       - CONFIG_URL=http://config-server:9999
       - EUREKA_URL=http://eureka-server:8761/eureka
+      - KAFKA_URL=http://kafka:29092
 
   gateway:
     env_file: ./.env
@@ -70,6 +100,7 @@ services:
       - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
       - CONFIG_URL=http://config-server:9999
       - EUREKA_URL=http://eureka-server:8761/eureka
+      - KAFKA_URL=http://kafka:29092
 
   user-service:
     env_file: ./.env
@@ -85,6 +116,7 @@ services:
       - CONFIG_URL=http://config-server:9999
       - EUREKA_URL=http://eureka-server:8761/eureka
       - WS_SERVER_URL=ws://websocket-service:9898/movieswipper-ws
+      - KAFKA_URL=http://kafka:29092
     restart: always
     depends_on:
       - db
@@ -108,6 +140,7 @@ services:
       - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
       - CONFIG_URL=http://config-server:9999
       - EUREKA_URL=http://eureka-server:8761/eureka
+      - KAFKA_URL=http://kafka:29092
 
   movie-service:
     env_file: ./.env
@@ -126,6 +159,7 @@ services:
       - CONFIG_URL=http://config-server:9999
       - EUREKA_URL=http://eureka-server:8761/eureka
       - TMDB_API_KEY=$TMDB_API_KEY
+      - KAFKA_URL=http://kafka:29092
 
   websocket-service:
     env_file: ./.env
@@ -141,6 +175,7 @@ services:
     environment:
       - CONFIG_URL=http://config-server:9999
       - EUREKA_URL=http://eureka-server:8761/eureka
+      - KAFKA_URL=http://kafka:29092
 
   
   file-service:
@@ -158,6 +193,7 @@ services:
       - POSTGRES_URL=$POSTGRES_URL_R2
       - POSTGRES_USERNAME=$POSTGRES_USER
       - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
+      - KAFKA_URL=http://kafka:29092
 
   notification-service:
     env_file: ./.env
@@ -174,6 +210,7 @@ services:
       - GMAIL_MAIL=$GMAIL_MAIL
       - GOOGLE_APP_PASS=$GOOGLE_APP_PASS
       - WS_SERVER_URL=ws://websocket-service:9898/movieswipper-ws
+      - KAFKA_URL=http://kafka:29092
 
   session-service:
     env_file: ./.env
@@ -190,6 +227,7 @@ services:
       - POSTGRES_URL=$POSTGRES_URL
       - POSTGRES_USERNAME=$POSTGRES_USER
       - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
+      - KAFKA_URL=http://kafka:29092
 
 volumes:
   pg_volume:
