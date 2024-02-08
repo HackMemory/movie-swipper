@@ -25,48 +25,28 @@ public class MovieController {
     public Mono<?> getPopular(
                 @RequestParam(value = "page", required=false, defaultValue = "0") Integer page
             )
-    {
-        try {
-            
-            return movieService.getPopulars(page);
-        } catch (Exception ex){
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, ex.getMessage(), ex);
-        }
+    {            
+        return movieService.getPopulars(page)
+            .onErrorMap(Exception.class, e -> new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage()));
     }
 
     @GetMapping("/movies-by-genre")
     public Mono<?> getByGenres(
             @RequestParam(value = "page", required=false, defaultValue = "0") Integer page,
-            String genres
-        ) {
-
-        try {
-            return movieService.getMoviesByGenres(page, genres);
-        } catch (Exception ex){
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, ex.getMessage(), ex);
-        }
+            String genres) {
+        return movieService.getMoviesByGenres(page, genres)
+            .onErrorMap(Exception.class, e -> new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage()));
     }
 
     @GetMapping("/genres")
     public Mono<?> getGenresList() {
-        try {
-            return movieService.getGenresList();
-        } catch (Exception ex){
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, ex.getMessage(), ex);
-        }
+        return movieService.getGenresList()
+            .onErrorMap(Exception.class, e -> new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage()));
     }
 
     @GetMapping("/{id}")
     public Mono<?> getMovie(@PathVariable("id") String id) {
-        try {
-            return movieService.getMovie(Integer.parseInt(id));
-        } catch (Exception ex){
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, ex.getMessage(), ex);
-        }
-
+        return movieService.getMovie(Integer.parseInt(id))
+            .onErrorMap(Exception.class, e -> new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage()));
     }
 }
