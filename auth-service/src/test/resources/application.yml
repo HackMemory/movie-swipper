@@ -1,0 +1,46 @@
+server:
+  servlet:
+    context-path: /api/v1
+
+
+spring:
+  application:
+    name: auth
+  cloud:
+    config:
+      enabled: false
+    discovery:
+      enabled: true
+      client:
+        simple:
+          instances:
+            user-service[0]:
+              uri: ${wiremock.url}
+
+eureka:
+  client:
+    enabled: false
+
+
+jwt:
+  private:
+    key: classpath:jwt.pem
+  public:
+    key: classpath:jwt.pub
+
+
+token:
+  expire: 3600
+
+test:
+  id: 0
+  username: test
+  password: test
+  encrypted-password: $2y$10$Q7T5uXHm1z44bUqan0rtruPSs2Zj0XUZF3/SotMth3q.9nkJCbnnW
+  jwt: eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJzZWxmIiwic3ViIjoidGVzdCIsImV4cCI6MTcwNjA5MTUzMSwiaWF0IjoxNzA2MDg3OTMxLCJyb2xlcyI6WyJST0xFX0FETUlOIl19.R9dBzPmecRPRsjv1NqENOVfG7HpefOFyAu34YjAnE4DeJ0Nu0q2p_pBCsWmDzcTS959Ew_Z0nUIjd5dhkf7FM-8pyUJoAko9Q0JZKgNka3NVvACVh-0KcpguaEjZKaTcP6KKNGLFtcStUNLnlcvro4qCiOVCzDbhlTwwc8g_O5IbDzIoFeh6znhGs__L87Dp-Uw9-2wjWHb12AwO-LD5c7PsdL5LP240ObCRaGjGPpDV81Pp12Ao1953JMhrTPz-wtWKZFqjAatdpv-SJ4EiGsAmlhH1EQs2PAfOTXI4jJWsTYstMwqTLu0v9UuVdx6CMEx3c5Jtyq8jUYgfOIi1Yg
+
+response:
+  user-found:
+    filename: user_found.json
+  user-not-found:
+    filename: user_not_found.json

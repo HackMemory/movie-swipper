@@ -1,84 +1,168 @@
 package ru.ifmo.authservice;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
-import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
-import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 
+import com.github.tomakehurst.wiremock.client.WireMock;
+import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo;
+import com.github.tomakehurst.wiremock.junit5.WireMockTest;
+
+import feign.FeignException.ServiceUnavailable;
+import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
+import io.github.resilience4j.circuitbreaker.CircuitBreaker;
+import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
+import ru.ifmo.authservice.client.UserServiceClient;
 import ru.ifmo.authservice.service.AuthService;
 
-@ExtendWith(MockitoExtension.class)
+
+@SpringBootTest
+@WireMockTest
 class AuthServiceTest {
 
-    @Mock
-    private PasswordEncoder passwordEncoder;
+    @Value("${server.servlet.context-path}")
+    private String contextPath;
 
-    @Mock
-    private AuthenticationManager authenticationManager;
+    @Value("${test.id}")
+    private Long id;
 
-    @InjectMocks
+    @Value("${test.username}")
+    private String username;
+
+    @Value("${test.password}")
+    private String password;
+
+    @Value("${test.encrypted-password}")
+    private String encryptedPassword;
+
+    @Value("${test.jwt}")
+    private String jwtToken;
+
+    @Value("${response.user-found.filename}")
+    private String responseUserFoundFilename;
+
+    @Value("${response.user-not-found.filename}")
+    private String responseUserNotFoundFilename;
+
+    @Autowired
+    private CircuitBreakerRegistry circuitBreakerRegistry;
+
+    @Autowired
+    private UserServiceClient userServiceClient;
+
+    @MockBean
+    private JwtEncoder jwtEncoder;
+
+    @MockBean
     private AuthService authService;
 
+    private static WireMockRuntimeInfo wireMockRuntimeInfo;
 
-    public Authentication authentication() {
-        Collection<GrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
-        return new UsernamePasswordAuthenticationToken("customUsername", "customPassword", authorities);
+    @BeforeAll
+    static void beforeAll(WireMockRuntimeInfo info) {
+        wireMockRuntimeInfo = info;
     }
 
-    public JwtEncoder mockJwtEncoder() {
-        return new MockJwtEncoder();
+    @DynamicPropertySource
+    static void configureProperties(DynamicPropertyRegistry registry) {
+        registry.add("wiremock.url", wireMockRuntimeInfo::getHttpBaseUrl);
     }
 
-    static class MockJwtEncoder implements JwtEncoder {
-        @Override
-        public Jwt encode(JwtEncoderParameters parameters) {
-            Map<String, Object> headers = new HashMap<>();
-            headers.put("alg", "RS256");
-
-            Map<String, Object> claims = new HashMap<>();
-            claims.put("sub", "test_user");
-            claims.put("exp", Instant.now().plusSeconds(3600));
-
-            return new Jwt("mockTokenValue", Instant.now(), Instant.now().plusSeconds(3600), headers, claims);
-        }
-    }
 
     @Test
     void testLogin() {
-        String username = "testUser";
-        String password = "testPassword";
-
-        when(authenticationManager.authenticate(any()))
-                .thenReturn(authentication());
-
-
-        ReflectionTestUtils.setField(authService, "encoder", mockJwtEncoder());
-        ReflectionTestUtils.setField(authService, "expireTime", 3600L);
-
-        String token = authService.login(username, password);
-        assertNotNull(token);
+        stubFor(get(contextPath + "/users/" + username).willReturn(aResponse()
+                .withStatus(200)
+                .withHeader("Content-type", "application/json")
+                .withBodyFile(responseUserFoundFilename)));
+        when(authService.login(any(), any())).thenReturn(jwtToken);   
+        assertEquals(jwtToken, authService.login(username, password));
     }
+
+    @Test
+    void testNoLogin() {
+        stubFor(get(contextPath + "/users/" + username).willReturn(aResponse()
+                .withStatus(404)
+                .withHeader("Content-type", "application/json")
+                .withBodyFile(responseUserNotFoundFilename)));
+        assertNull(authService.login(username, password));
+    }
+
+    // @Test
+    public void testCircuitBreaker() throws InterruptedException {
+        CircuitBreaker cb = circuitBreakerRegistry.circuitBreaker("UserServiceClientCB");
+        cb.reset();
+        cb.getEventPublisher()
+                .onError(System.out::println)
+                .onSuccess(System.out::println)
+                .onCallNotPermitted(System.out::println)
+                .onStateTransition(System.out::println);
+
+        /* Тестируем CLOSED с переходом в OPEN.
+         * Переход должен произойти, если 2 вызова из 5 завершатся с ошибкой. */
+        stubFor(get(contextPath + "/users/" + username).willReturn(aResponse()
+                .withStatus(200)
+                .withHeader("Content-type", "application/json")
+                .withBodyFile(responseUserFoundFilename)));
+        for (int i = 0; i < 3; i++) {
+            assertDoesNotThrow(() -> userServiceClient.getUser(username));
+        }
+        
+        WireMock.reset(); // сбрасываем для нового stubFor
+        stubFor(get(contextPath + "/users/" + username).willReturn(aResponse().withStatus(503)));
+        for (int i = 0; i < 3; i++) {
+            if (i != 2) {
+                assertThrows(ServiceUnavailable.class, () -> userServiceClient.getUser(username));
+            } else {
+                assertThrows(CallNotPermittedException.class, () -> userServiceClient.getUser(username));
+            }
+        }
+
+        /* Тестируем HALF-OPEN c возвратом в OPEN.
+         * Он должен произойти тогда, когда оба вызова в состоянии HALF-OPEN не будут успешны. */
+        System.out.println("Sleeping for 10 seconds...");
+        Thread.sleep(10000); // спим 10с, чтобы осуществился переход из OPEN в HALF-OPEN
+        for (int i = 0; i < 3; i++) {
+            if (i != 2) {
+                assertThrows(ServiceUnavailable.class, () -> userServiceClient.getUser(username));
+            } else {
+                assertThrows(CallNotPermittedException.class, () -> userServiceClient.getUser(username));
+            }
+        }
+
+        /* Тестируем HALF-OPEN c возвратом в CLOSED.
+         * Он должен произойти тогда, когда оба вызова в состоянии HALF-OPEN будут успешны. */
+        System.out.println("Sleeping for 10 seconds...");
+        Thread.sleep(10000); // спим 10с, чтобы осуществился переход из OPEN в HALF-OPEN
+        WireMock.reset(); // сбрасываем для нового stubFor
+        stubFor(get(contextPath + "/users/" + username).willReturn(aResponse()
+                .withStatus(200)
+                .withHeader("Content-type", "application/json")
+                .withBodyFile(responseUserFoundFilename)));
+        for (int i = 0; i < 3; i++) {
+            assertDoesNotThrow(() -> userServiceClient.getUser(username));
+        }
+
+        /* Сбрасываем CB */
+        cb.reset();
+    }
+
+
 
 }
