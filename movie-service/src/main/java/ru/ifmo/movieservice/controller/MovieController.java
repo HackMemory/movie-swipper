@@ -49,7 +49,7 @@ public class MovieController {
         }
     }
 
-    @GetMapping("/genres-list")
+    @GetMapping("/genres")
     public Mono<?> getGenresList() {
         try {
             return movieService.getGenresList();
