@@ -115,6 +115,9 @@ public class UserServiceController {
         } catch (UsernameNotFoundException | StorageException | IOException  ex) {
             throw new ResponseStatusException(
                     HttpStatus.NOT_FOUND, ex.getMessage(), ex);
+        } catch (IllegalArgumentException ex){
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN, ex.getMessage(), ex);
         }
     }
 
