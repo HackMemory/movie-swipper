@@ -6,10 +6,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import ru.ifmo.movieservice.config.FeignConfiguration;
 import ru.ifmo.movieservice.dto.UserDTO;
 
 
-@FeignClient(name = "user-service", path = "${server.servlet.context-path}")
+@FeignClient(name = "user-service", path = "${server.servlet.context-path}", configuration = FeignConfiguration.class)
 public interface UserServiceClient {
     @GetMapping("/users/{username}")
     @CircuitBreaker(name = "UserServiceClientCB")
