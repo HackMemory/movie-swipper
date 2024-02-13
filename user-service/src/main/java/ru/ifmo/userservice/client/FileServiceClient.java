@@ -9,10 +9,11 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import ru.ifmo.userservice.config.FeignConfiguration;
 import ru.ifmo.userservice.dto.FileDTO;
 
 
-@FeignClient(name = "file-service", path = "${server.servlet.context-path}")
+@FeignClient(name = "file-service", path = "${server.servlet.context-path}", configuration = FeignConfiguration.class)
 public interface FileServiceClient {
     @PostMapping(value = "/files/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @CircuitBreaker(name = "FileServiceClientCB")
