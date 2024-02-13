@@ -24,9 +24,9 @@ eureka:
 
 jwt:
   private:
-    key: classpath:jwt.pem
+    key: classpath:jwt._pem
   public:
-    key: classpath:jwt.pub
+    key: classpath:jwt._pub
 
 
 token:
