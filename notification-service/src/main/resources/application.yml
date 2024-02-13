@@ -17,6 +17,6 @@ spring:
       env:
         enabled: true
 
-logging:
-  level:
-    root: trace
+# logging:
+#   level:
+#     root: trace
